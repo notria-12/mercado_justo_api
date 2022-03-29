@@ -33,6 +33,7 @@ export class UsersService {
       });
     }
     const accountType = this.clsService.get<UserPayload>('user').tipo_conta;
+    console.log(accountType);
     const newUser = new this.schemaModel({
       ...createUserDto,
       senha: bcrypt.hashSync(createUserDto.senha, bcrypt.genSaltSync()),

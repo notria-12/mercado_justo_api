@@ -18,11 +18,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
           ...exception.getResponse() as object,
           timestamp: new Date().toISOString(),
         });
-    } else if (status == 401) {
+    }
+     else if (status == 401) {
       return response
         .status(status)
         .json({
-          mensagem: 'Não autorizado.',
+          mensagem: 'Não autorizado.2',
           dados: {},
           timestamp: new Date().toISOString(),
         });
