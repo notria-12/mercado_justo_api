@@ -45,19 +45,19 @@ export class UsersController {
     return this.usersService.getList();
   }
 
-  @ApiOkResponse(ApiResSchema.applyType('boolean'))
-  @Public()
-  @Get('email/:email')
-  findByEmailExternal(@Param('email') email: string): Promise<boolean> {
-    return this.usersService.findByEmailExternal(email);
-  }
+  // @ApiOkResponse(ApiResSchema.applyType('boolean'))
+  // @Public()
+  // @Get('email/:email')
+  // findByEmailExternal(@Param('email') email: string): Promise<boolean> {
+  //   return this.usersService.findByEmailExternal(email);
+  // }
 
-  @ApiOkResponse(ApiResSchema.applyType('boolean'))
-  @Public()
-  @Get('cpf/:cpf')
-  findByCpfExternal(@Param('cpf') cpf: string): Promise<boolean> {
-    return this.usersService.findByCpfExternal(cpf);
-  }
+  // @ApiOkResponse(ApiResSchema.applyType('boolean'))
+  // @Public()
+  // @Get('cpf/:cpf')
+  // findByCpfExternal(@Param('cpf') cpf: string): Promise<boolean> {
+  //   return this.usersService.findByCpfExternal(cpf);
+  // }
 
   @Roles(Role.Admin, Role.Operador)
   @Permissions(Permission.Usuarios)
