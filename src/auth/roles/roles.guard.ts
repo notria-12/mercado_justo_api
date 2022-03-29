@@ -31,7 +31,7 @@ export class RolesGuard implements CanActivate {
 
     if (!this.hasAccessLevel(context)) {
       throw new ForbiddenException({
-        mensagem: 'Você não possui acesso a este recurso.',
+        mensagem: 'Você não possui nivel de acesso a este recurso.',
         dados: {}
       });
     }

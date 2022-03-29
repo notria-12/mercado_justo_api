@@ -11,7 +11,7 @@ export class PermissionsGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     if (!this.hasPermission(context)) {
       throw new ForbiddenException({
-        mensagem: 'Você não possui acesso a este recurso.',
+        mensagem: 'Você não possui permissão a este recurso.',
         dados: {}
       });
     }
