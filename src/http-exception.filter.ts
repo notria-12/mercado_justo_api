@@ -23,7 +23,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return response
         .status(status)
         .json({
-          mensagem: 'Não autorizado.2',
+          mensagem: 'Não autorizado.',
           dados: {},
           timestamp: new Date().toISOString(),
         });

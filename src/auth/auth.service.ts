@@ -23,16 +23,19 @@ export class AuthService {
   ) { }
 
   async validateUser(cpf: string, pass: string): Promise<any> {
+
     const user = await this.usersService.findByCPFInternal(cpf);
+
     if (user && bcrypt.compareSync(pass, user.senha)) {
       const lastAccessUpdated = await this.usersService.updateLastAccess(user._id);
       const { senha, ...result } = lastAccessUpdated.toObject();
       return result;
     }
-    return null;
+    return user;
   }
 
   async login(user: UserDocument) {
+    console.log(user);
     this.eventEmitter.emit(
       'access.login',
       {
@@ -57,7 +60,7 @@ export class AuthService {
   }
 
   private generateToken(user: UserDocument) {
-    return this.jwtService.sign({
+     return this.jwtService.sign({
       sub: user._id,
       cpf: user.cpf,
       email: user.email,

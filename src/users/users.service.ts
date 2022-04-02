@@ -70,7 +70,7 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    const { senha, ...user } = (await this.schemaModel.findById(id).populate('mercado')).toObject();
+    const { senha, ...user } = (await this.schemaModel.findById(id).populate('mercado') ).toObject();
     return user;
   }
 
@@ -98,6 +98,7 @@ export class UsersService {
   }
 
   async findByCPFInternal(cpf: string) {
+    console.log(cpf)
     return await this.schemaModel.findOne({ cpf });
   }
 

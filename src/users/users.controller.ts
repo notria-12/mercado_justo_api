@@ -53,11 +53,11 @@ export class UsersController {
   // }
 
   // @ApiOkResponse(ApiResSchema.applyType('boolean'))
-  // @Public()
-  // @Get('cpf/:cpf')
-  // findByCpfExternal(@Param('cpf') cpf: string): Promise<boolean> {
-  //   return this.usersService.findByCpfExternal(cpf);
-  // }
+  @Public()
+  @Get('cpf/:cpf')
+  findByCpfExternal(@Param('cpf') cpf: string): Promise<any> {
+    return this.usersService.findByCpfExternal(cpf);
+  }
 
   @Roles(Role.Admin, Role.Operador)
   @Permissions(Permission.Usuarios)
