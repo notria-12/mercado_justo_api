@@ -28,7 +28,7 @@ export class UsersService {
     });
     if (exists) {
       throw new ConflictException({
-        mensagem: 'E-mail e/ou CPF já utilizado(s).',
+        mensagem: 'E-mail e/ou CPF já utilizado.',
         dados: {}
       });
     }
