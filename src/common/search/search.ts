@@ -75,7 +75,7 @@ export function generateSearchObject(rawSearch: FindAllSearchDto) {
     if (searchObj.tipo === 'string' || !searchObj.tipo) {
       if (isString(searchObj.valor)) {
         if (searchObj.valor.match(/^-$/)) {
-          console.log("entrou 1");
+          
           Object.assign(resultSearchObj, {
             [searchObj.termo]: {
               $exists: false,
