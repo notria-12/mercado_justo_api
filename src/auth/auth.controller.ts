@@ -7,6 +7,8 @@ import { ValidateTokenDto, LoginGoogleDto } from './dto'
 import { CreateLogin, LoginResponse } from './entities';
 import { RecoverPasswordDto, NewPasswordDto } from 'src/mail/dto';
 import { LoginPhoneDto } from './dto/login-phone.dto';
+import { SendEmailTokenDto } from 'src/mail/dto/send-email-token.dto';
+import { ReceiveTokenDto } from 'src/mail/dto/receive-token.dto';
 
 @ApiController('Login', [LoginResponse])
 @Controller('auth')
@@ -31,13 +33,28 @@ export class AuthController {
     return this.authService.loginGoogle(loginGoogle)
   }
 
-  // @ApiCreatedResponse(ApiResSchema.apply(LoginResponse))
-  @ApiCreatedResponse(ApiResSchema.applyType('object'))
+  @ApiCreatedResponse(ApiResSchema.apply(LoginResponse)) 
   @Public()
   @Post('login-phone')
   async loginPhone(@Body() loginPhone: LoginPhoneDto) {
      return this.authService.loginPhone(loginPhone);
     
+  }
+
+  @ApiCreatedResponse(ApiResSchema.applyType('object'))
+  @Public()
+  @Post('codigo-login')
+  async loginEmailToken(@Body() email: SendEmailTokenDto) {
+     return this.authService.sendEmailToken(email);  
+  }
+
+  @ApiCreatedResponse(ApiResSchema.applyType('object'))
+  @Public()
+  @Post('login-email')
+  confirmEmailToken(
+    @Body() receiveToken: ReceiveTokenDto,
+  ) {
+    return this.authService.confirmEmailToken(receiveToken);
   }
 
 

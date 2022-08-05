@@ -12,6 +12,8 @@ import { NewPasswordDto, RecoverPasswordDto } from 'src/mail/dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LoginPhoneDto } from './dto/login-phone.dto';
 import { FirebaseAuthStrategy } from './firebase/firebase-auth.strategy';
+import { SendEmailTokenDto } from 'src/mail/dto/send-email-token.dto';
+import { ReceiveTokenDto } from 'src/mail/dto/receive-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -95,6 +97,10 @@ export class AuthService {
     }
   }
 
+  async sendEmailToken(email: SendEmailTokenDto){
+    return await this.mailService.sendEmailToken(email);
+  }
+
   private async verifyFirebaseToken(token: string){
     try{
     var user = await this.firebaseStrategy.validate(token);
@@ -152,5 +158,16 @@ export class AuthService {
       await this.usersService.updatePasswordByEmail(newPassword.email, newPassword.senha);
     }
     return {};
+  }
+
+  async confirmEmailToken(receiveToken: ReceiveTokenDto) {
+    const isTokenValid = await this.tokenService.validate(receiveToken.email, receiveToken.token);
+    if (isTokenValid) {
+      const user = await this.usersService.findByEmailInternal(receiveToken.email);
+      const response  = this.login(user);
+      return response;
+    }else {
+      throw new UnauthorizedException();
+    }
   }
 }
