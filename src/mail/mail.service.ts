@@ -3,6 +3,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { UsersService } from 'src/users/users.service';
 import { TokenService } from 'src/token/token.service';
 import { RecoverPasswordDto } from './dto';
+import {join} from 'path';
+import { template } from 'handlebars';
 
 @Injectable()
 export class MailService {
@@ -27,7 +29,7 @@ export class MailService {
           to: user.email,
           // from: '"Support Team" <support@example.com>', // override default from
           subject: 'Esqueceu sua senha? Mercado Justo',
-          template: './recover-password',
+          template: 'recover-password',
           context: {
             name: user.nome,
             url: url,

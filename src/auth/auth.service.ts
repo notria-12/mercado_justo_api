@@ -28,13 +28,13 @@ export class AuthService {
   async validateUser(cpf: string, pass: string): Promise<any> {
 
     const user = await this.usersService.findByCPFInternal(cpf);
-
-    if (user && bcrypt.compareSync(pass, user.senha)) {
+    const isCorrectPassword = bcrypt.compareSync(pass, user.senha);
+    if (user && isCorrectPassword ) {
       const lastAccessUpdated = await this.usersService.updateLastAccess(user._id);
       const { senha, ...result } = lastAccessUpdated.toObject();
       return result;
     }
-    return user;
+    // return user;
   }
 
   async login(user: UserDocument) {

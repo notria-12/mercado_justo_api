@@ -4,7 +4,8 @@ import { Log, LogSchema } from 'src/schema';
 import { GlobalPluginService } from 'src/mongoose-hooks/global-plugin.service';
 import * as multer from 'multer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { join } from 'path';
+import path, { join } from 'path';
+
 
 export default () => ({
   mongo: function (globalPluginService: GlobalPluginService) {
@@ -53,6 +54,7 @@ export default () => ({
     },
     template: {
       dir: join(__dirname, '../mail/templates'),
+      
       adapter: new HandlebarsAdapter(),
       options: {
         strict: true,
