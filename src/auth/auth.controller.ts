@@ -6,6 +6,7 @@ import { ApiBody, ApiCreatedResponse } from '@nestjs/swagger';
 import { ValidateTokenDto, LoginGoogleDto } from './dto'
 import { CreateLogin, LoginResponse } from './entities';
 import { RecoverPasswordDto, NewPasswordDto } from 'src/mail/dto';
+import { LoginPhoneDto } from './dto/login-phone.dto';
 
 @ApiController('Login', [LoginResponse])
 @Controller('auth')
@@ -22,12 +23,23 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+
   @ApiCreatedResponse(ApiResSchema.apply(LoginResponse))
   @Public()
   @Post('login-google')
   async loginGoogle(@Body() loginGoogle: LoginGoogleDto) {
     return this.authService.loginGoogle(loginGoogle)
   }
+
+  // @ApiCreatedResponse(ApiResSchema.apply(LoginResponse))
+  @ApiCreatedResponse(ApiResSchema.applyType('object'))
+  @Public()
+  @Post('login-phone')
+  async loginPhone(@Body() loginPhone: LoginPhoneDto) {
+     return this.authService.loginPhone(loginPhone);
+    
+  }
+
 
   @ApiCreatedResponse(ApiResSchema.applyType('boolean'))
   @Post('validar')

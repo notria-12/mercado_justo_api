@@ -81,3 +81,51 @@ export class CreateUserDto {
   @Type(() => AddressDto)
   endereco?: AddressDto;
 }
+
+export class CreateUserAppDto {
+  @IsNotEmpty()
+  @IsString()
+  nome: string;
+  @IsNotEmpty()
+  @IsCPF()
+  cpf: string;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+  @ValidateIf(o => !o.tipo_conta || o.tipo_conta != 'gerente')
+  @IsNotEmpty()
+  @IsPhoneNumber('BR')
+  telefone: string;
+  @ApiProperty({ enum: orientacao })
+  @IsOptional()
+  @IsIn(orientacao)
+  orientacao: Orientacao;
+  @IsOptional()
+  @IsNumber()
+  @Min(18)
+  idade: number;
+  // @IsNotEmpty()
+  // @IsString()
+  // @MinLength(8)
+  // senha: string;
+  // @IsOptional()
+  // @IsArray()
+  // @IsNumber({}, { each: true })
+  // responsavel_mercados: number[];
+  @ApiProperty({ enum: tipoConta })
+  @IsOptional()
+  @IsIn(tipoConta)
+  tipo_conta: TipoConta;
+  @ApiProperty({ enum: [permissoes] })
+  @IsOptional()
+  @IsArray()
+  @IsIn(permissoes, { each: true })
+  permissoes: Permissoes[];
+  @IsOptional()
+  @IsString()
+  google_id?: string;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AddressDto)
+  endereco?: AddressDto;
+}
