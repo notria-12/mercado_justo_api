@@ -1,5 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { CreateUserDto, ImportQueryDto, UpdateUserDto } from './dto';
+import { CreateUserAppDto, CreateUserDto, ImportQueryDto, UpdateUserDto } from './dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from 'src/schema';
@@ -19,6 +19,45 @@ export class UsersService {
     private usersImport: UsersImport
   ) { }
 
+  async createApp(createUserDto: CreateUserAppDto) {
+    const exists = await this.schemaModel.findOne({
+      $or: [
+        { email: createUserDto.email },
+        { cpf: createUserDto.cpf },
+        {telefone: createUserDto.telefone}
+      ]
+    });
+    if (exists) {
+      throw new ConflictException({
+        mensagem: 'E-mail e/ou CPF ou telefone já utilizado.',
+        dados: {}
+      });
+    }
+    const accountType = this.clsService.get<UserPayload>('user').tipo_conta;
+    
+    const newUser = new this.schemaModel({
+      ...createUserDto,
+      // senha: bcrypt.hashSync(createUserDto.senha, bcrypt.genSaltSync()),
+      // responsavel_mercados: accountType !== 'admin'
+      //   ? []
+      //   : accountType === 'admin' && createUserDto.responsavel_mercados
+      //     ? createUserDto.responsavel_mercados
+      //     : [],
+      permissoes: accountType !== 'admin'
+        ? []
+        : accountType === 'admin' && createUserDto.permissoes
+          ? createUserDto.permissoes
+          : [],
+      tipo_conta: accountType !== 'admin'
+        ? 'cliente'
+        : accountType === 'admin' && createUserDto.tipo_conta
+          ? createUserDto.tipo_conta
+          : 'cliente',
+    });
+    const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const exists = await this.schemaModel.findOne({
       $or: [
@@ -33,7 +72,7 @@ export class UsersService {
       });
     }
     const accountType = this.clsService.get<UserPayload>('user').tipo_conta;
-    console.log(accountType);
+    
     const newUser = new this.schemaModel({
       ...createUserDto,
       senha: bcrypt.hashSync(createUserDto.senha, bcrypt.genSaltSync()),
@@ -95,6 +134,10 @@ export class UsersService {
 
   async findByEmailInternal(email: string) {
     return await this.schemaModel.findOne({ email });
+  }
+
+  async findByPhoneInternal(telefone: string) {
+    return await this.schemaModel.findOne({ telefone });
   }
 
   async findByCPFInternal(cpf: string) {

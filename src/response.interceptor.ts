@@ -37,7 +37,9 @@ export class ResponseInterceptor<T> implements NestInterceptor {
       return `${routes[route].singular} criad${routes[route].gender} com sucesso.`;
     } else if (handler.match(/all/i)) {
       return `${routes[route].plural} listad${routes[route].gender}s com sucesso.`;
-    } else if (handler.match(/one/i)) {
+    } else if (handler.match(/login/i)) {
+      return 'Logado com sucesso.';
+    }else if (handler.match(/one/i)) {
       return `${routes[route].singular} recuperad${routes[route].gender} com sucesso.`;
     } else if (handler.match(/update/i)) {
       return `${routes[route].singular} atualizad${routes[route].gender} com sucesso.`;
@@ -45,15 +47,14 @@ export class ResponseInterceptor<T> implements NestInterceptor {
       return `${routes[route].plural} removid${routes[route].gender}s com sucesso.`;
     } else if (handler.match(/remove/i)) {
       return `${routes[route].singular} removid${routes[route].gender} com sucesso.`;
-    } else if (handler.match(/login/i)) {
-      return 'Logado com sucesso.';
-    } else if (handler.match(/validate/i)) {
+    }  else if (handler.match(/validate/i)) {
       return 'Token de acesso validado com sucesso.';
     } else if (handler.match(/exists/i)) {
       return `${routes[route].singular} verificad${routes[route].gender} com sucesso.`
     } else if (handler.match(/import/i)) {
       return `Dados importados com sucesso para ${routes[route].singular}.`
     }
+ 
   }
 
   handleData(context: ExecutionContext, handler: string, resData: any) {
