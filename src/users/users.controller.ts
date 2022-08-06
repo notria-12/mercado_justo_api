@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Put, Param, Query, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, ImportQueryDto, UpdateUserDto } from './dto';
+import { CreateUserDto, ImportQueryDto, UpdateUserDto, CreateUserAppDto } from './dto';
 import { ApiBearerAuth, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { ApiResSchema, Public, PaginationDto, FindAllSearchDto, ApiController, ApiFile } from 'src/common';
 import { User } from 'src/schema';
@@ -18,6 +18,13 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @ApiCreatedResponse(ApiResSchema.apply(User))
+  @Public()
+  @Post('app')
+  createAPP(@Body() createUserDto: CreateUserAppDto) {
+    return this.usersService.createApp(createUserDto);
   }
 
   @Roles(Role.Admin, Role.Operador)

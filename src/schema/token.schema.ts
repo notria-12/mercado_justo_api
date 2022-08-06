@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
-export const tipoToken = ['recuperar-senha'] as const;
+export const tipoToken = ['recuperar-senha', 'login-email'] as const;
 export type TipoToken = typeof tipoToken[number];
 
 export type TokenDocument = Token & Document;

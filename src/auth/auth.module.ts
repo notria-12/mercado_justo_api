@@ -12,6 +12,8 @@ import { RolesGuard } from './roles';
 import { PermissionsGuard } from './permissions';
 import { MailModule } from 'src/mail/mail.module';
 import { TokenModule } from 'src/token/token.module'
+import { FirebaseAuthGuard } from './firebase/firebase-auth.guard';
+import { FirebaseAuthStrategy } from './firebase/firebase-auth.strategy';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { TokenModule } from 'src/token/token.module'
     AuthService,
     LocalStrategy,
     JwtStrategy,
+    FirebaseAuthStrategy,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

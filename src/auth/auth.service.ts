@@ -10,6 +10,10 @@ import { MailService } from 'src/mail/mail.service';
 import { TokenService } from 'src/token/token.service';
 import { NewPasswordDto, RecoverPasswordDto } from 'src/mail/dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { LoginPhoneDto } from './dto/login-phone.dto';
+import { FirebaseAuthStrategy } from './firebase/firebase-auth.strategy';
+import { SendEmailTokenDto } from 'src/mail/dto/send-email-token.dto';
+import { ReceiveTokenDto } from 'src/mail/dto/receive-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,19 +23,20 @@ export class AuthService {
     private configService: ConfigService,
     private mailService: MailService,
     private tokenService: TokenService,
-    private eventEmitter: EventEmitter2
+    private eventEmitter: EventEmitter2,
+    private firebaseStrategy: FirebaseAuthStrategy
   ) { }
 
   async validateUser(cpf: string, pass: string): Promise<any> {
 
     const user = await this.usersService.findByCPFInternal(cpf);
-
-    if (user && bcrypt.compareSync(pass, user.senha)) {
+    const isCorrectPassword = bcrypt.compareSync(pass, user.senha);
+    if (user && isCorrectPassword ) {
       const lastAccessUpdated = await this.usersService.updateLastAccess(user._id);
       const { senha, ...result } = lastAccessUpdated.toObject();
       return result;
     }
-    return user;
+    // return user;
   }
 
   async login(user: UserDocument) {
@@ -44,6 +49,7 @@ export class AuthService {
         colecao: 'usuarios'
       }
     );
+    console.log('after emitter')
     return {
       access_token: this.generateToken(user),
       usuario: {
@@ -60,6 +66,7 @@ export class AuthService {
   }
 
   private generateToken(user: UserDocument) {
+    console.log(user)
      return this.jwtService.sign({
       sub: user._id,
       cpf: user.cpf,
@@ -77,6 +84,30 @@ export class AuthService {
       return this.login(user);
     } else {
       throw new UnauthorizedException();
+    }
+  }
+
+  async loginPhone(loginPhone: LoginPhoneDto) {
+    if (await this.verifyFirebaseToken(loginPhone.firebase_token)) {
+      const user = await this.usersService.findByPhoneInternal(loginPhone.phone);
+      const response  = this.login(user);
+      return response;
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
+  async sendEmailToken(email: SendEmailTokenDto){
+    return await this.mailService.sendEmailToken(email);
+  }
+
+  private async verifyFirebaseToken(token: string){
+    try{
+    var user = await this.firebaseStrategy.validate(token);
+    console.log(user);
+      return true;
+    }catch(error){
+      return false;
     }
   }
 
@@ -127,5 +158,16 @@ export class AuthService {
       await this.usersService.updatePasswordByEmail(newPassword.email, newPassword.senha);
     }
     return {};
+  }
+
+  async confirmEmailToken(receiveToken: ReceiveTokenDto) {
+    const isTokenValid = await this.tokenService.validate(receiveToken.email, receiveToken.token);
+    if (isTokenValid) {
+      const user = await this.usersService.findByEmailInternal(receiveToken.email);
+      const response  = this.login(user);
+      return response;
+    }else {
+      throw new UnauthorizedException();
+    }
   }
 }
