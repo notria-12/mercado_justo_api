@@ -27,10 +27,10 @@ export class GlobalPluginService {
         globalPluginService.logMiddleware(this, 'remover-muitos', logModel);
       });
 
-      schema.post<mongoose.Model<any>>('insertMany', function (docs, next) {
-        globalPluginService.logMiddleware(docs, 'criar-muitos', logModel, this.collection.name);
-        next()
-      });
+      // schema.post<mongoose.Model<any>>('insertMany', function (docs, next) {
+      //   globalPluginService.logMiddleware(docs, 'criar-muitos', logModel, this.collection.name);
+      //   next()
+      // });
     }
   }
 
