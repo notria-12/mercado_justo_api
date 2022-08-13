@@ -9,6 +9,7 @@ import { RecoverPasswordDto, NewPasswordDto } from 'src/mail/dto';
 import { LoginPhoneDto } from './dto/login-phone.dto';
 import { SendEmailTokenDto } from 'src/mail/dto/send-email-token.dto';
 import { ReceiveTokenDto } from 'src/mail/dto/receive-token.dto';
+import { SendSmsTokenDto } from 'src/mail/dto/send-sms-token.dto';
 
 @ApiController('Login', [LoginResponse])
 @Controller('auth')
@@ -46,6 +47,13 @@ export class AuthController {
   @Post('codigo-login')
   async loginEmailToken(@Body() email: SendEmailTokenDto) {
      return this.authService.sendEmailToken(email);  
+  }
+
+  @ApiCreatedResponse(ApiResSchema.applyType('object'))
+  @Public()
+  @Post('login/verifica-numero')
+  async verifyPhoneNumber(@Body() telefone: SendSmsTokenDto) {
+     return this.authService.verifyPhoneNumber(telefone);  
   }
 
   @ApiCreatedResponse(ApiResSchema.applyType('object'))

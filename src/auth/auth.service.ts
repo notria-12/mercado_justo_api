@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,6 +14,8 @@ import { LoginPhoneDto } from './dto/login-phone.dto';
 import { FirebaseAuthStrategy } from './firebase/firebase-auth.strategy';
 import { SendEmailTokenDto } from 'src/mail/dto/send-email-token.dto';
 import { ReceiveTokenDto } from 'src/mail/dto/receive-token.dto';
+import { template } from 'lodash';
+import { SendSmsTokenDto } from 'src/mail/dto/send-sms-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -99,6 +101,19 @@ export class AuthService {
 
   async sendEmailToken(email: SendEmailTokenDto){
     return await this.mailService.sendEmailToken(email);
+  }
+
+   async verifyPhoneNumber(telefone: SendSmsTokenDto){
+    const user = await this.usersService.findByPhoneInternal(telefone.telefone);
+    if(user){
+      return {'mensagem': 'Código enviado'}
+    }else{
+      throw new NotFoundException({
+        mensagem: 'Telefone não cadastrado',
+        dados: {}
+      });
+    }
+
   }
 
   private async verifyFirebaseToken(token: string){

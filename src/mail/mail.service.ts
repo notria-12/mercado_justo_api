@@ -1,4 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+
 import { MailerService } from '@nestjs-modules/mailer';
 import { UsersService } from 'src/users/users.service';
 import { TokenService } from 'src/token/token.service';
@@ -73,8 +75,9 @@ export class MailService {
       }
     }
 
-    throw new ConflictException({
-      mensagem: 'E-mail não encontrado.',
+    throw new NotFoundException({
+      mensagem: 'E-mail não cadastrado.',
+
       dados: {}
     });
   }
