@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { UsersService } from 'src/users/users.service';
 import { TokenService } from 'src/token/token.service';
@@ -73,6 +73,9 @@ export class MailService {
       }
     }
 
-    return {'mensagem': 'Erro ao enviar token', 'detalhe': 'email não cadastrado'};
+    throw new NotFoundException({
+      mensagem: 'E-mail não cadastrado.',
+      dados: {}
+    });
   }
 }

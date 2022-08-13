@@ -39,7 +39,10 @@ export class ResponseInterceptor<T> implements NestInterceptor {
       return `${routes[route].plural} listad${routes[route].gender}s com sucesso.`;
     } else if (handler.match(/login/i)) {
       return 'Logado com sucesso.';
+    }else if (handler.match(/verify/i)) {
+      return `Numero verificado com sucesso.`
     }else if (handler.match(/one/i)) {
+      console.log(handler);
       return `${routes[route].singular} recuperad${routes[route].gender} com sucesso.`;
     } else if (handler.match(/update/i)) {
       return `${routes[route].singular} atualizad${routes[route].gender} com sucesso.`;

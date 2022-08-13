@@ -29,6 +29,13 @@ export class PricesController {
     return this.pricesService.findAll(query);
   }
 
+  @ApiOkResponse(ApiResSchema.applyArr(Price))
+  @Public()
+  @Get('some')
+  findSpecificsPrices() {
+    return this.pricesService.findSpecificPrices('6254b2f17c0cb961c84d2341', 17);
+  }
+
   @ApiOkResponse(ApiResSchema.apply(Price))
   @Public()
   @Get(':id')

@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatePriceDto, UpdatePriceDto } from './dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { PriceDocument, ProductDocument } from 'src/schema';
 import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto, generateSearchObject, tryToParse, SearchObj } from 'src/common';
 import { UserPayload } from 'src/auth/entities';
@@ -91,6 +91,23 @@ export class PricesService {
     );
     return await this.schemaModel.findById(id)
       .populate('produto');
+  }
+
+  async findSpecificPrices(productId: string, marketsId: number) {
+    // this.eventEmitter.emit(
+    //   'access.precos',
+    //   {
+    //     documento: id,
+    //     usuario: this.clsService.get<UserPayload>('user').userId || null,
+    //     colecao: 'precos'
+    //   }
+    // );
+    return await this.schemaModel.find({
+      where:{
+        $and:[{ produto: productId}, {id:{ marketsId}}]
+      }
+    });
+      
   }
 
   async update(id: string, updatePriceDto: UpdatePriceDto) {
