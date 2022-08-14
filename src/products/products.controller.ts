@@ -22,7 +22,7 @@ export class ProductsController {
   }
 
   @ApiOkResponse(ApiResSchema.applyArr(Product))
-  @Roles(Role.Operador, Role.Gerente)
+  // @Roles(Role.Operador, Role.Gerente)
   @Permissions(Permission.Produtos, Permission.Precos)
   @Get()
   findAll(@Query() query: PaginationDto & FindAllSearchDto) {

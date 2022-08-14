@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Body, Param, Get } from '@nestjs/common';
 import { LocalAuthGuard } from './local';
 import { AuthService } from 'src/auth/auth.service';
 import { Public, ApiResSchema, ApiController } from 'src/common';
@@ -51,8 +51,8 @@ export class AuthController {
 
   @ApiCreatedResponse(ApiResSchema.applyType('object'))
   @Public()
-  @Post('login/verifica-numero')
-  async verifyPhoneNumber(@Body() telefone: SendSmsTokenDto) {
+  @Get('verifica-numero/:phone')
+  async verifyPhoneNumber(@Param('phone') telefone: string) {
      return this.authService.verifyPhoneNumber(telefone);  
   }
 
