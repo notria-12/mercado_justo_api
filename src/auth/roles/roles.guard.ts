@@ -9,7 +9,8 @@ import { ROLES_KEY } from './roles.decorator';
 export class RolesGuard implements CanActivate {
   private AppOriginsRolesRelation = {
     'ADMIN_MERCADO_JUSTO': [Role.Admin, Role.Operador, Role.Gerente],
-    'SWAGGER_MERCADO_JUSTO': [Role.Admin, Role.Operador, Role.Gerente]
+    'SWAGGER_MERCADO_JUSTO': [Role.Admin, Role.Operador, Role.Gerente],
+    'APP_MERCADO_JUSTO': [Role.Admin, Role.Operador, Role.Gerente, Role.Cliente]
   }
 
   constructor(private reflector: Reflector) { }
