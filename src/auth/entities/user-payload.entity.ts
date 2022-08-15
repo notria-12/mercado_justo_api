@@ -3,6 +3,7 @@ import { PickType } from '@nestjs/swagger';
 
 export class UserPayload extends PickType(User,
   [
+    'nome',
     'cpf',
     'email',
     'status_assinante',
@@ -11,4 +12,5 @@ export class UserPayload extends PickType(User,
     'responsavel_mercados'
   ] as const) {
   userId: string;
+  
 }

@@ -80,11 +80,13 @@ export class RolesGuard implements CanActivate {
 
     if (noAccessPlan) {
       return true;
-    } else if (user.tipo_conta === 'cliente' && !user.status_assinante) {
-      return false;
-    } else {
-      return true;
-    }
+    } 
+    // else if (user.tipo_conta === 'cliente' && !user.status_assinante) {
+    //   return false;
+    // } else {
+    //   return true;
+    // }
+    return true;
   }
 
   private hasAccessLevel(context: ExecutionContext) {
@@ -93,6 +95,7 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    console.log(requiredRoles)
     if (!requiredRoles || user.tipo_conta === 'admin') {
       return true;
     }

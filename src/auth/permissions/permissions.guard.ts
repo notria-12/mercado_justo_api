@@ -30,6 +30,8 @@ export class PermissionsGuard implements CanActivate {
     if (user.tipo_conta === 'admin' || user.permissoes.some(permissions => permissions.includes('todas'))) {
       return true;
     }
+    console.log(requiredPermissions)
+    console.log(user)
     return requiredPermissions.some(
       (permission) => user.permissoes?.some(
         (userPermission) => userPermission.includes(permission)
