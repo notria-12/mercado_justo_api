@@ -93,7 +93,7 @@ export class PricesService {
       .populate('produto');
   }
 
-  async findSpecificPrices(productId: string, marketsId: number) {
+  async findSpecificPrices(productId: string, marketsIds:  number[]) {
     // this.eventEmitter.emit(
     //   'access.precos',
     //   {
@@ -103,10 +103,10 @@ export class PricesService {
     //   }
     // );
     return await this.schemaModel.find({
-      where:{
-        $and:[{ produto: productId}, {id:{ marketsId}}]
-      }
-    });
+      
+        "id": {$in: marketsIds}, "produto": productId
+      
+    }).populate('produto');
       
   }
 

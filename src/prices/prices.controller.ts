@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { PricesService } from './prices.service';
-import { CreatePriceDto, UpdatePriceDto } from './dto';
+import { CreatePriceDto, UpdatePriceDto, GetPriceDto } from './dto';
 import { ApiBearerAuth, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { ApiResSchema, Public, PaginationDto, FindAllSearchDto, ApiController, ApiFile, BulkRemoveDto } from 'src/common';
 import { Price } from 'src/schema';
@@ -31,9 +31,9 @@ export class PricesController {
 
   @ApiOkResponse(ApiResSchema.applyArr(Price))
   @Public()
-  @Get('some')
-  findSpecificsPrices() {
-    return this.pricesService.findSpecificPrices('6254b2f17c0cb961c84d2341', 17);
+  @Get('from-markets')
+  findSpecificsPrices(@Query() query: GetPriceDto) {
+    return this.pricesService.findSpecificPrices(query.productId, query.marketIds.map((value,index) => Number(value)));
   }
 
   @ApiOkResponse(ApiResSchema.apply(Price))
