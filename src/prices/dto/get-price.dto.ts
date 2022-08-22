@@ -4,13 +4,18 @@ import { IsMongoId, IsNotEmpty, IsString, IsNumber } from 'src/common';
 
 export class GetPriceDto {
   @IsNotEmpty()
-  @IsMongoId()
-  productId: string;
+  // @IsMongoId()
   @IsNotEmpty()
   @IsArray()
   @IsString({ each: true })
   @Type(() => String)
   @Transform(({value}) => value.split(','))
-  marketIds?: string[];
+  productIds: string[];
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  @Type(() => String)
+  @Transform(({value}) => value.split(','))
+  marketIds: string[];
   
 }

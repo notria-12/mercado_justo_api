@@ -31,9 +31,9 @@ export class PricesController {
 
   @ApiOkResponse(ApiResSchema.applyArr(Price))
   @Public()
-  @Get('from-markets')
+  @Get('specifics-prices')
   findSpecificsPrices(@Query() query: GetPriceDto) {
-    return this.pricesService.findSpecificPrices(query.productId, query.marketIds.map((value,index) => Number(value)));
+    return this.pricesService.findSpecificPrices(query.productIds, query.marketIds.map((value,index) => Number(value)));
   }
 
   @ApiOkResponse(ApiResSchema.apply(Price))
