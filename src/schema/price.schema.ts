@@ -7,6 +7,13 @@ export type PriceDocument = Price & mongoose.Document;
 
 @Schema()
 export class Price {
+  // constructor(){}
+  constructor(id, produto,preco)
+  {
+    this.produto = produto;
+    this.id = id;
+    this.preco = preco;
+  }
   @ApiProperty({ type: Product })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'produtos' })
   produto: Product | string;

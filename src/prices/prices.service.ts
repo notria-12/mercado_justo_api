@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatePriceDto, UpdatePriceDto } from './dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { PriceDocument, ProductDocument } from 'src/schema';
+import { Price, PriceDocument, PriceSchema, ProductDocument } from 'src/schema';
 import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto, generateSearchObject, tryToParse, SearchObj } from 'src/common';
 import { UserPayload } from 'src/auth/entities';
 import { ClsService } from 'nestjs-cls';
@@ -93,7 +93,7 @@ export class PricesService {
       .populate('produto');
   }
 
-  async findSpecificPrices(productId: string, marketsIds:  number[]) {
+  async findSpecificPrices(productIds: string[], marketsIds:  number[]) {
     // this.eventEmitter.emit(
     //   'access.precos',
     //   {
@@ -102,12 +102,28 @@ export class PricesService {
     //     colecao: 'precos'
     //   }
     // );
-    return await this.schemaModel.find({
+    let prices = await this.schemaModel.find({
       
-        "id": {$in: marketsIds}, "produto": productId
+        "id": {$in: marketsIds}, "produto": {$in: productIds}
       
-    }).populate('produto');
-      
+    });
+    let ordenedPrices = [];
+    productIds.forEach((productId, index) =>{
+     let pricesByProducts = prices.filter((price) => price.produto == productId);
+      marketsIds.forEach((marketsId) => {
+        if(pricesByProducts.filter((price) => price.id == marketsId).length == 0){
+          let newPrice = Object.assign({}, prices[0]);
+          newPrice.id = marketsId,
+          newPrice.preco = 'Em Falta'
+          newPrice.produto = productId;
+          
+          pricesByProducts.push(newPrice)
+        }
+      })
+      ordenedPrices.push(pricesByProducts.sort((a,b) => a.id - b.id));
+    })
+    
+    return ordenedPrices; 
   }
 
   async update(id: string, updatePriceDto: UpdatePriceDto) {
