@@ -103,8 +103,8 @@ export class AuthService {
     return await this.mailService.sendEmailToken(email);
   }
 
-   async verifyPhoneNumber(telefone: string){
-    const user = await this.usersService.findByPhoneInternal(telefone);
+   async verifyPhoneNumber(telefone: SendSmsTokenDto){
+    const user = await this.usersService.findByPhoneInternal(telefone.telefone);
     if(user){
       return {'mensagem': 'Código enviado'}
     }else{
