@@ -51,8 +51,8 @@ export class AuthController {
 
   @ApiCreatedResponse(ApiResSchema.applyType('object'))
   @Public()
-  @Get('verifica-numero/:phone')
-  async verifyPhoneNumber(@Param('phone') telefone: string) {
+  @Post('verifica-numero')
+  async verifyPhoneNumber(@Body() telefone: SendSmsTokenDto) {
      return this.authService.verifyPhoneNumber(telefone);  
   }
 
