@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { CreatePixDto } from "./dtos/create-pix.dto";
 import { PaymentsService } from "./payments.service";
 
@@ -9,5 +9,10 @@ export class PaymentsController{
    @Post('pix')
    async geraChavePix(@Body() createPixDto : CreatePixDto){
         return this.paymentsService.geraChavePix(createPixDto);
+    }
+
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+      return this.paymentsService.findOne(id);
     }
 }
