@@ -1,23 +1,26 @@
 import { Injectable } from "@nestjs/common";
+import { createCrypto } from "google-auth-library/build/src/crypto/crypto";
+import { CreatePixDto } from "./dtos/create-pix.dto";
 
 @Injectable()
 export class PaymentsService{
     
-    async geraChavePix(){
+    async geraChavePix(createPixDto : CreatePixDto){
         var mercadopago = require('mercadopago');
-        mercadopago.configurations.setAccessToken('TEST-3113315594089042-091721-f0b0377226f4d3fa5d398affa6d34355-305744408');
-
+        mercadopago.configurations.setAccessToken('APP_USR-3113315594089042-091721-98faf9315355c2b44fd4cc3d055b0b1e-305744408');
+         
+        
         var payment_data = {
-            transaction_amount: 100,
+            transaction_amount: 0.10,
             description: 'Título do produto',
             payment_method_id: 'pix',
             payer: {
-              email: 'airton.araujo.s18@gmail.com',
-              first_name: 'Test',
-              last_name: 'User',
+              email: createPixDto.email,
+              first_name: createPixDto.nome.split(" ")[0],
+              last_name: createPixDto.nome.split(" ")[1],
               identification: {
                   type: 'CPF',
-                  number: '19119119100'
+                  number: createPixDto.cpf
               },
               address:  {
                   zip_code: '06233200',
@@ -31,6 +34,7 @@ export class PaymentsService{
           };
           
          var data = await mercadopago.payment.create(payment_data);
-         return {'qr_code': data['body']['point_of_interaction']['transaction_data']['qr_code']};
+         console.log(data)
+         return {'qr_code': data['body']['point_of_interaction']['transaction_data']['qr_code'], 'id_pix': data['body']['id'], 'status': data['body']['status'], 'payer': data['body']['payer']};
     }
 }
