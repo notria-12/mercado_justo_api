@@ -11,6 +11,9 @@ export class Signature{
     @Prop()
     status : boolean;
     @ApiProperty()
+    @Prop({ default: false })
+    pagamento_pendente : boolean;
+    @ApiProperty()
     @Prop()
     id_pagamento : string;
     @ApiProperty()

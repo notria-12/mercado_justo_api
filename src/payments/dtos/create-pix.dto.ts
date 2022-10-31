@@ -4,6 +4,9 @@ import { IsCPF, IsEmail } from "src/common";
 export class CreatePixDto{
     @IsNotEmpty()
     @IsString()
+    id: string;
+    @IsNotEmpty()
+    @IsString()
     nome: string;
     @IsNotEmpty()
     @IsCPF()

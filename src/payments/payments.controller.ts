@@ -12,7 +12,7 @@ export class PaymentsController{
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    buscaAssinatura(@Param('id') id: string) {
       return this.paymentsService.findOne(id);
     }
 }
