@@ -13,6 +13,11 @@ export class PaymentsController{
 
     @Get(':id')
     buscaAssinatura(@Param('id') id: string) {
-      return this.paymentsService.findOne(id);
+      return this.paymentsService.buscaAssinatura(id);
+    }
+
+    @Get('dias/:id')
+    buscaDiasRestantes(@Param('id') id: string){
+      return this.paymentsService.buscaDiasRestantes(id);
     }
 }

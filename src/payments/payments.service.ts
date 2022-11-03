@@ -53,7 +53,7 @@ export class PaymentsService{
          return {'qr_code': data['body']['point_of_interaction']['transaction_data']['qr_code'], 'id_pix': data['body']['id'], 'status': data['body']['status'], 'payer': data['body']['payer']};
     }
 
-    async findOne(id: string) {
+    async buscaAssinatura(id: string) {
         var mercadopago = require('mercadopago');
         mercadopago.configurations.setAccessToken('APP_USR-3113315594089042-091721-98faf9315355c2b44fd4cc3d055b0b1e-305744408');  
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
@@ -72,6 +72,7 @@ export class PaymentsService{
                 var date_approved = new Date(data['body']['date_approved']);
                 var daysSinceApproved = (Date.now() - date_approved.getTime()) / (1000 * 60 * 60 * 24);
                 var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                
                 if((daysSinceApproved => 0 && daysSinceApproved <= 30) && !signature['status'] ){
                     await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false, status: true, ultima_assinatura: date_approved, data_expiracao: date_approved.getTime() + (1000 * 60 * 60 * 24*30)});
                     signature = await this.signatureModel.findOne( {id_usuario:  id}); 
@@ -84,6 +85,17 @@ export class PaymentsService{
             return signature;        
         }else{
             throw new NotFoundException({mensagem: "Usuário não tem uma assinatura vigente", codigo: "not_found_signature"})
+        }
+      }
+
+      async  buscaDiasRestantes(id: string) {
+        let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
+        console.log(signature);
+        if(signature){
+            var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+            return {"dias_restantes": remainingDays};
+        }else{
+            throw new NotFoundException({mensagem: "Usuário não tem uma assinatura vigente", codigo: "not_found_signature"});
         }
       }
 }
