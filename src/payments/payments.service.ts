@@ -5,6 +5,7 @@ import { isEqual } from "lodash";
 import { Model } from "mongoose";
 import { SignatureDocument } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
+import { CreatePreferenceDto } from "./dtos/create-preference.dto";
 
 @Injectable()
 export class PaymentsService{
@@ -54,6 +55,7 @@ export class PaymentsService{
     }
 
     async buscaAssinatura(id: string) {
+        console.log('ASSINATURA');
         var mercadopago = require('mercadopago');
         mercadopago.configurations.setAccessToken('APP_USR-3113315594089042-091721-98faf9315355c2b44fd4cc3d055b0b1e-305744408');  
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
@@ -89,6 +91,7 @@ export class PaymentsService{
       }
 
       async  buscaDiasRestantes(id: string) {
+        console.log('DIAS');
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
         console.log(signature);
         if(signature){
@@ -97,5 +100,32 @@ export class PaymentsService{
         }else{
             throw new NotFoundException({mensagem: "Usuário não tem uma assinatura vigente", codigo: "not_found_signature"});
         }
+      }
+
+      async  buscaPreferencia(createPreference: CreatePreferenceDto) {
+        
+        var mercadopago = require('mercadopago');
+        mercadopago.configurations.setAccessToken('APP_USR-3113315594089042-091721-98faf9315355c2b44fd4cc3d055b0b1e-305744408');
+       
+        var preference = {}
+        
+       
+        var item = {
+        title: 'Assinatura MJ',
+        quantity: 1,
+        currency_id: 'BRL',
+        unit_price: 0.1
+        }
+
+        var payer = {
+        email: createPreference.email
+        }
+        
+        preference['items'] = [item]
+        preference['payer'] = payer
+
+        var newPreference = await mercadopago.preferences.create(preference);   
+        console.log(newPreference)
+        return {'id': newPreference['body']['id']};
       }
 }
