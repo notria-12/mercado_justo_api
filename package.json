@@ -47,6 +47,7 @@
     "handlebars": "^4.7.7",
     "helmet": "^4.6.0",
     "lodash": "^4.17.21",
+    "mercadopago": "^1.5.14",
     "mongoose": "^6.0.12",
     "nest-aws-sdk": "2.1.0",
     "nestjs-cls": "^2.1.0",

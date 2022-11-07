@@ -25,6 +25,7 @@ import { Credentials, S3 } from 'aws-sdk';
 import { CategoriesModule } from './categories/categories.module';
 import { TermsUseModule } from './terms-use/terms-use.module';
 import { FaqModule } from './faq/faq.module';
+import { PaymentsModule } from './payments/payments.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -85,6 +86,7 @@ const ENV = process.env.NODE_ENV;
     CategoriesModule,
     TermsUseModule,
     FaqModule,
+    PaymentsModule
   ],
   providers: [
     {
