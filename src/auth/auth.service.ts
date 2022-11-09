@@ -58,6 +58,8 @@ export class AuthService {
         id: user._id,
         nome: user.nome,
         email: user.email,
+        telefone: user.telefone,
+        cpf: user.cpf,
         status_assinante: user.status_assinante,
         ultimo_acesso: user.ultimo_acesso,
         tipo_conta: user.tipo_conta,
