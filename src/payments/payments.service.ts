@@ -14,8 +14,8 @@ export class PaymentsService{
     async geraChavePix(createPixDto : CreatePixDto){
         var mercadopago = require('mercadopago');
         mercadopago.configurations.setAccessToken('APP_USR-3113315594089042-091721-98faf9315355c2b44fd4cc3d055b0b1e-305744408');
-         
-        
+        const exists = await this.signatureModel.findOne({id_usuario: createPixDto.id})
+        let data;
         var payment_data = {
             transaction_amount: 0.10,
             description: 'Título do produto',
@@ -39,14 +39,20 @@ export class PaymentsService{
             }
           };
           
-         var data = await mercadopago.payment.create(payment_data);
          
-         const exists = await this.signatureModel.findOne({id_usuario: createPixDto.id})
-         console.log(exists)
+         
+        
+         
          if(exists){
-            await this.signatureModel.updateOne({id_usuario: createPixDto.id}, {id_pagamento:  data['body']['id']});
+            if(exists['pagamento_pendente']){
+                 data = await mercadopago.payment.findById(exists['id_pagamento']);
+            }else{
+                 data = await mercadopago.payment.create(payment_data);
+                await this.signatureModel.updateOne({id_usuario: createPixDto.id}, {id_pagamento:  data['body']['id']});
+            }
            
          }else{
+             data = await mercadopago.payment.create(payment_data);
             const createSignature = new this.signatureModel({id_pagamento: data['body']['id'], status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createPixDto.id});
             createSignature.save();
          }
@@ -91,10 +97,10 @@ export class PaymentsService{
       }
 
       async  buscaDiasRestantes(id: string) {
-        console.log('DIAS');
+        
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
-        console.log(signature);
-        if(signature){
+        
+        if(signature != undefined && signature['status']){
             var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
             return {"dias_restantes": remainingDays};
         }else{
