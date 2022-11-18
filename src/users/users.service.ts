@@ -175,6 +175,12 @@ export class UsersService {
         throw new ConflictException({ mensagem: 'Este CPF já está sendo usado.', dados: {} });
       }
     }
+    if (updateUserDto.telefone) {
+      const phoneExists = await this.schemaModel.findOne({ telefone: updateUserDto.telefone });
+      if (phoneExists && phoneExists._id != id) {
+        throw new ConflictException({ mensagem: 'Este telefone já está sendo usado.', dados: {} });
+      }
+    }
     if (updateUserDto.senha) {
       const hash = bcrypt.hashSync(updateUserDto.senha, bcrypt.genSaltSync());
       updateUserDto.senha = hash;
