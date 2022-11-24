@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { ProductDocument } from 'src/schema';
 import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto } from 'src/common';
 import { ProductsImport } from './products.import';
+import { GetProductsDto } from './dto/get-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -56,6 +57,10 @@ export class ProductsService {
 
   async findOne(id: string) {
     return await this.schemaModel.findById(id);
+  }
+  async findByCategory(category: string){
+    
+    return await this.schemaModel.find({$or: [{categoria_1: category}, {categoria_2: category}]})
   }
 
   async getList() {

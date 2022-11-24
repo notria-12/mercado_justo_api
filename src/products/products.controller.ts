@@ -7,6 +7,7 @@ import { Product } from 'src/schema';
 import { Roles, Role } from 'src/auth/roles';
 import { Permissions, Permission } from 'src/auth/permissions';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetProductsDto } from './dto/get-products.dto';
 
 @ApiController('Produtos', [Product], true)
 @Roles(Role.Operador)
@@ -39,6 +40,12 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productModelsService.findOne(id);
+  }
+
+  @ApiOkResponse(ApiResSchema.apply(Product))
+  @Get('/category/:id')
+  findByCategory(@Param('id') id: string) {
+    return this.productModelsService.findByCategory(id);
   }
 
   @ApiOkResponse(ApiResSchema.apply(Product))
