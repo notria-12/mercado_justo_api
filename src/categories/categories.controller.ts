@@ -28,6 +28,22 @@ export class CategoriesController {
   }
 
   @Public()
+  @ApiCreatedResponse(ApiResSchema.applyArr(Category))
+  @ApiBearerAuth()
+  @Get('/geral')
+  findMainCatergories() {
+    return this.categoriesService.findMainCatergories();
+  }
+
+  @Public()
+  @ApiCreatedResponse(ApiResSchema.applyArr(Category))
+  @ApiBearerAuth()
+  @Get('/geral/:id')
+  findSecondaryCatergories(@Param('id') id: string) {
+    return this.categoriesService.findSecondaryCatergories(id);
+  }
+
+  @Public()
   @ApiCreatedResponse(ApiResSchema.apply(Category))
   @ApiBearerAuth()
   @Get(':id')

@@ -27,6 +27,13 @@ export class CategoriesService {
     });
   }
 
+  async findMainCatergories(){
+    return await this.schemaModel.find({pai: null})
+  }
+  async findSecondaryCatergories(id: String){
+    return await this.schemaModel.find({pai: id})
+  }
+
   async findOne(id: string) {
     return await this.schemaModel.findById(id).populate({
       path: 'pai',
