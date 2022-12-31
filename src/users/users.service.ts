@@ -9,12 +9,14 @@ import { LoginGoogleDto } from 'src/auth/dto';
 import { UserPayload } from 'src/auth/entities';
 import { ClsService } from 'nestjs-cls';
 import { UsersImport } from './users.import';
+import { SignatureDocument } from 'src/schema/signature.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel('usuarios')
     private schemaModel: Model<UserDocument>,
+    @InjectModel('assinaturas') private signatureModel: Model<SignatureDocument>,
     private clsService: ClsService,
     private usersImport: UsersImport
   ) { }
@@ -43,18 +45,12 @@ export class UsersService {
       //   : accountType === 'admin' && createUserDto.responsavel_mercados
       //     ? createUserDto.responsavel_mercados
       //     : [],
-      permissoes: accountType !== 'admin'
-        ? []
-        : accountType === 'admin' && createUserDto.permissoes
-          ? createUserDto.permissoes
-          : [],
-      tipo_conta: accountType !== 'admin'
-        ? 'cliente'
-        : accountType === 'admin' && createUserDto.tipo_conta
-          ? createUserDto.tipo_conta
-          : 'cliente',
+      permissoes:["gerenciamento_dados","usuarios", "imagens", "precos", "produtos", "mercados"],
+      tipo_conta: 'admin',
     });
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
+    const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*2), ultima_assinatura: Date.now(), id_usuario: user._id});
+    createSignature.save();
     return user;
   }
 

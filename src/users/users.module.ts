@@ -6,11 +6,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SignatureSchema } from 'src/schema/signature.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'usuarios', schema: UserSchema }
+      { name: 'usuarios', schema: UserSchema },
+      { name: 'assinaturas', schema: SignatureSchema }
     ]),
     MulterModule.registerAsync({
       useFactory: async (configService: ConfigService) => configService.get('multer'),
