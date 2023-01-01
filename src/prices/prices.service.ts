@@ -126,6 +126,26 @@ export class PricesService {
     return ordenedPrices; 
   }
 
+  async getAveragePrice(productId: string, marketsIds:  number[]) {
+    
+    let prices = await this.schemaModel.find({
+      
+        "id": {$in: marketsIds}, "produto": productId
+      
+    });
+
+    let sumPrices = 0.0;
+
+    prices.forEach((price, index) => {
+      if(price['preco'] != 'Em Falta'){
+
+        sumPrices += +(price['preco'].replace('R$ ','').replace(',','.'))
+      }
+    })
+    
+    return {'preco-medio': (sumPrices/prices.length)}; 
+  }
+
   async update(id: string, updatePriceDto: UpdatePriceDto) {
     if (this.userHasAccessToId(updatePriceDto.id)) {
       return await this.schemaModel.findOneAndUpdate(

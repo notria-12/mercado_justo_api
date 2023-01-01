@@ -7,6 +7,7 @@ import { Price } from 'src/schema';
 import { Role, Roles } from 'src/auth/roles';
 import { Permission, Permissions } from 'src/auth/permissions';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetAveragePriceDto } from './dto/get-average-price.dto';
 
 @ApiController('Preços', [Price])
 @Controller('precos')
@@ -34,6 +35,13 @@ export class PricesController {
   @Get('specifics-prices')
   findSpecificsPrices(@Query() query: GetPriceDto) {
     return this.pricesService.findSpecificPrices(query.productIds, query.marketIds.map((value,index) => Number(value)));
+  }
+
+  @ApiOkResponse(ApiResSchema.applyArr(Price))
+  @Public()
+  @Get('preco-medio')
+  getAveragePrice(@Query() query: GetAveragePriceDto) {
+    return this.pricesService.getAveragePrice(query.productId, query.marketIds.map((value,index) => Number(value)));
   }
 
   @ApiOkResponse(ApiResSchema.apply(Price))
