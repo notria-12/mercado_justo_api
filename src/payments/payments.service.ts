@@ -65,9 +65,10 @@ export class PaymentsService{
         var mercadopago = require('mercadopago');
         mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
-    
+        console.log(`assinatua: ${signature}`)
         if(signature){
-             if(signature['id_pagamento'] !== ''){
+             if(signature['id_pagamento'] != ''){
+                console.log('Id não vazio');
                 var data = await mercadopago.payment.findById(signature['id_pagamento']);
                 console.log(data);
              
@@ -95,12 +96,15 @@ export class PaymentsService{
                         signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                     }
                 }
+             }else{
+                console.log('Id  vazio');
+                if((new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 0 && signature['status']){
+                    console.log('Mudou assinatura para false')
+                    await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                    signature = await this.signatureModel.findOne( {id_usuario:  id}); 
+                }
              }
-             if((new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 0 && signature['status']){
-                console.log('Mudou assinatura para false')
-                await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
-                signature = await this.signatureModel.findOne( {id_usuario:  id}); 
-            }
+             
 
             return signature;        
         }else{
