@@ -63,7 +63,10 @@ export class PaymentsService{
     async buscaAssinatura(id: string) {
         console.log('ASSINATURA');
         var mercadopago = require('mercadopago');
+        console.log('import');
+        console.log(process.env.MERCADO_PAGO_TOKEN)
         mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
+        console.log('access token');
         let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
         console.log(`assinatua: ${signature}`)
         if(signature){
