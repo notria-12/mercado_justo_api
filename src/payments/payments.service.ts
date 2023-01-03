@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { createCrypto } from "google-auth-library/build/src/crypto/crypto";
-import { isEqual } from "lodash";
+
 import { Model } from "mongoose";
 import { SignatureDocument } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
