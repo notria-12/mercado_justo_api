@@ -66,7 +66,7 @@ export class PaymentsService{
         console.log(process.env.MERCADO_PAGO_TOKEN)
         mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
         console.log('access token');
-        let signature = (await this.signatureModel.findOne( {id_usuario:  id}));
+        let signature = await this.signatureModel.findOne( {id_usuario:  id});
         console.log(`assinatua: ${signature}`)
         if(signature){
              if(signature['id_pagamento'] != '0'){
