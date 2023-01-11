@@ -54,6 +54,7 @@ export class ProductsService {
   async findAll(query: PaginationDto & FindAllSearchDto) {
     return await findAllWithPaginationSearch(this.schemaModel, query);
   }
+  
 
   async findOne(id: string) {
     return await this.schemaModel.findById(id);

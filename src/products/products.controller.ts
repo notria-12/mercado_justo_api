@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
-import { ApiResSchema, PaginationDto, FindAllSearchDto, ApiController, GetListModel, ApiFile, BulkRemoveDto } from 'src/common';
+import { ApiResSchema, PaginationDto, FindAllSearchDto, ApiController, GetListModel, ApiFile, BulkRemoveDto, Public } from 'src/common';
 import { Product } from 'src/schema';
 import { Roles, Role } from 'src/auth/roles';
 import { Permissions, Permission } from 'src/auth/permissions';
@@ -29,6 +29,8 @@ export class ProductsController {
   findAll(@Query() query: PaginationDto & FindAllSearchDto) {
     return this.productModelsService.findAll(query);
   }
+  
+  
 
   @ApiOkResponse(ApiResSchema.applyArr(GetListModel))
   @Get('listar')

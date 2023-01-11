@@ -26,6 +26,9 @@ import { CategoriesModule } from './categories/categories.module';
 import { TermsUseModule } from './terms-use/terms-use.module';
 import { FaqModule } from './faq/faq.module';
 import { PaymentsModule } from './payments/payments.module';
+import { PublicProductsModule } from './public-products/public-products.module';
+import { PublicSupermarketsModule } from './public-supermarkets/public-supermarkets.module';
+import { PublicPricesModule } from './public-prices/public-prices.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -86,7 +89,11 @@ const ENV = process.env.NODE_ENV;
     CategoriesModule,
     TermsUseModule,
     FaqModule,
-    PaymentsModule
+    PaymentsModule,
+    PublicProductsModule,
+    PublicSupermarketsModule,
+    PublicPricesModule
+
   ],
   providers: [
     {
