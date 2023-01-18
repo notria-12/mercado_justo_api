@@ -31,7 +31,8 @@ export class PricesController {
   }
 
   @ApiOkResponse(ApiResSchema.applyArr(Price))
-  @Public()
+  @Roles(Role.Operador, Role.Gerente, Role.Cliente)
+  @Permissions(Permission.Produtos, Permission.Precos)
   @Get('specifics-prices')
   findSpecificsPrices(@Query() query: GetPriceDto) {
     return this.pricesService.findSpecificPrices(query.productIds, query.marketIds.map((value,index) => Number(value)));

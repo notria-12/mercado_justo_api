@@ -24,7 +24,7 @@ export class ProductsController {
 
   @ApiOkResponse(ApiResSchema.applyArr(Product))
   @Roles(Role.Operador, Role.Gerente, Role.Cliente)
-  // @Permissions(Permission.Produtos, Permission.Precos)
+  @Permissions(Permission.Produtos, Permission.Precos)
   @Get()
   findAll(@Query() query: PaginationDto & FindAllSearchDto) {
     return this.productModelsService.findAll(query);

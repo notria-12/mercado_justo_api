@@ -45,8 +45,8 @@ export class UsersService {
       //   : accountType === 'admin' && createUserDto.responsavel_mercados
       //     ? createUserDto.responsavel_mercados
       //     : [],
-      permissoes:["gerenciamento_dados","usuarios", "imagens", "precos", "produtos", "mercados"],
-      tipo_conta: 'admin',
+      permissoes:[ "precos", "produtos", "mercados"],
+      tipo_conta: 'cliente',
     });
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
     const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*2), ultima_assinatura: Date.now(), id_usuario: user._id});
