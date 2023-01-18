@@ -35,16 +35,9 @@ export class UsersService {
         dados: {}
       });
     }
-    const accountType = this.clsService.get<UserPayload>('user').tipo_conta;
     
     const newUser = new this.schemaModel({
-      ...createUserDto,
-      // senha: bcrypt.hashSync(createUserDto.senha, bcrypt.genSaltSync()),
-      // responsavel_mercados: accountType !== 'admin'
-      //   ? []
-      //   : accountType === 'admin' && createUserDto.responsavel_mercados
-      //     ? createUserDto.responsavel_mercados
-      //     : [],
+      ...createUserDto, 
       permissoes:[ "precos", "produtos", "mercados"],
       tipo_conta: 'cliente',
     });
