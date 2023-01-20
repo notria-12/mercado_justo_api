@@ -27,7 +27,7 @@ export class UsersController {
     return this.usersService.createApp(createUserDto);
   }
 
-  @Roles(Role.Admin, Role.Operador, Role.Cliente)
+  @Roles(Role.Admin, Role.Operador)
   @Permissions(Permission.Usuarios)
   @ApiOkResponse(ApiResSchema.applyArr(User))
   @ApiBearerAuth()
@@ -66,7 +66,7 @@ export class UsersController {
     return this.usersService.findByCpfExternal(cpf);
   }
 
-  @Roles(Role.Admin, Role.Operador)
+  @Roles(Role.Admin, Role.Operador, Role.Cliente)
   @Permissions(Permission.Usuarios)
   @ApiOkResponse(ApiResSchema.apply(User))
   @ApiBearerAuth()
