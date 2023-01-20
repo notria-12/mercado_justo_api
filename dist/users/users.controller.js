@@ -79,7 +79,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "createAPP", null);
 __decorate([
-    (0, roles_1.Roles)(roles_1.Role.Admin, roles_1.Role.Operador, roles_1.Role.Cliente),
+    (0, roles_1.Roles)(roles_1.Role.Admin, roles_1.Role.Operador),
     (0, permissions_1.Permissions)(permissions_1.Permission.Usuarios),
     (0, swagger_1.ApiOkResponse)(common_2.ApiResSchema.applyArr(schema_1.User)),
     (0, swagger_1.ApiBearerAuth)(),
@@ -120,7 +120,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findByCpfExternal", null);
 __decorate([
-    (0, roles_1.Roles)(roles_1.Role.Admin, roles_1.Role.Operador),
+    (0, roles_1.Roles)(roles_1.Role.Admin, roles_1.Role.Operador, roles_1.Role.Cliente),
     (0, permissions_1.Permissions)(permissions_1.Permission.Usuarios),
     (0, swagger_1.ApiOkResponse)(common_2.ApiResSchema.apply(schema_1.User)),
     (0, swagger_1.ApiBearerAuth)(),
