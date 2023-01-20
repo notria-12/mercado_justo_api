@@ -38,7 +38,7 @@ export class UsersService {
     
     const newUser = new this.schemaModel({
       ...createUserDto, 
-      permissoes:[ "precos", "produtos", "mercados"],
+      permissoes:[ "precos", "produtos", "mercados", "usuarios"],
       tipo_conta: 'cliente',
     });
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
