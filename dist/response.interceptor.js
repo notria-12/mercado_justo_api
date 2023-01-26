@@ -39,7 +39,6 @@ let ResponseInterceptor = class ResponseInterceptor {
     }
     generateMessage(route, handler) {
         if (handler.match(/create/i)) {
-            
             return `${routes[route].singular} criad${routes[route].gender} com sucesso.`;
         }
         else if (handler.match(/all/i)) {
@@ -52,31 +51,25 @@ let ResponseInterceptor = class ResponseInterceptor {
             return `Numero verificado com sucesso.`;
         }
         else if (handler.match(/one/i)) {
-            
+            console.log(handler);
             return `${routes[route].singular} recuperad${routes[route].gender} com sucesso.`;
         }
         else if (handler.match(/update/i)) {
-            
             return `${routes[route].singular} atualizad${routes[route].gender} com sucesso.`;
         }
         else if (handler.match(/bulkRemove/i)) {
-            
             return `${routes[route].plural} removid${routes[route].gender}s com sucesso.`;
         }
         else if (handler.match(/remove/i)) {
-            
             return `${routes[route].singular} removid${routes[route].gender} com sucesso.`;
         }
         else if (handler.match(/validate/i)) {
-            
             return 'Token de acesso validado com sucesso.';
         }
         else if (handler.match(/exists/i)) {
-            
             return `${routes[route].singular} verificad${routes[route].gender} com sucesso.`;
         }
         else if (handler.match(/import/i)) {
-            
             return `Dados importados com sucesso para ${routes[route].singular}.`;
         }
     }
