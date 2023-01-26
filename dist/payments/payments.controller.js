@@ -15,8 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentsController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
+const common_2 = require("../common");
+const create_card_dto_1 = require("./dtos/create-card.dto");
 const create_pix_dto_1 = require("./dtos/create-pix.dto");
 const create_preference_dto_1 = require("./dtos/create-preference.dto");
+const create_signature_dto_1 = require("./dtos/create-signature.dto");
 const payments_service_1 = require("./payments.service");
 let PaymentsController = class PaymentsController {
     constructor(paymentsService) {
@@ -30,6 +33,18 @@ let PaymentsController = class PaymentsController {
     }
     buscaDiasRestantes(id) {
         return this.paymentsService.buscaDiasRestantes(id);
+    }
+    criaAssinatura(createSignature) {
+        return this.paymentsService.createSignature(createSignature);
+    }
+    notificaPagamento(data) {
+        return this.paymentsService.notificaPamento(data);
+    }
+    criaCartao(createCard) {
+        return this.paymentsService.saveCard(createCard);
+    }
+    buscaCartao(id) {
+        return this.paymentsService.getCardInfo(id);
     }
     buscaPreferencia(createPreference) {
         return this.paymentsService.buscaPreferencia(createPreference);
@@ -59,6 +74,39 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "buscaDiasRestantes", null);
+__decorate([
+    (0, common_1.Post)(),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_signature_dto_1.CreateSignatureDto]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "criaAssinatura", null);
+__decorate([
+    (0, common_1.Post)('pagamento/'),
+    (0, common_2.Public)(),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "notificaPagamento", null);
+__decorate([
+    (0, common_1.Post)('card/'),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_card_dto_1.CreateCardDto]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "criaCartao", null);
+__decorate([
+    (0, common_1.Get)('card/:id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "buscaCartao", null);
 __decorate([
     (0, common_1.Post)('preferencias/'),
     openapi.ApiResponse({ status: 201 }),

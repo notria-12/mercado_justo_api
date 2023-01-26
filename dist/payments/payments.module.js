@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentsModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const schema_1 = require("../schema");
 const signature_schema_1 = require("../schema/signature.schema");
 const payments_controller_1 = require("./payments.controller");
 const payments_service_1 = require("./payments.service");
@@ -17,7 +18,8 @@ let PaymentsModule = class PaymentsModule {
 PaymentsModule = __decorate([
     (0, common_1.Module)({
         imports: [mongoose_1.MongooseModule.forFeature([
-                { name: 'assinaturas', schema: signature_schema_1.SignatureSchema }
+                { name: 'assinaturas', schema: signature_schema_1.SignatureSchema },
+                { name: 'usuarios', schema: schema_1.UserSchema }
             ]),], controllers: [payments_controller_1.PaymentsController], providers: [payments_service_1.PaymentsService]
     })
 ], PaymentsModule);

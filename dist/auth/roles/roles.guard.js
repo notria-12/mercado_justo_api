@@ -62,12 +62,7 @@ let RolesGuard = class RolesGuard {
             return role === 'admin';
         }
         else if (isPublic) {
-            if (origin) {
-                return Object.keys(this.AppOriginsRolesRelation).includes(origin);
-            }
-            else {
-                return false;
-            }
+            return true;
         }
         else {
             return this.AppOriginsRolesRelation[origin].includes(role);

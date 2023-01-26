@@ -7,6 +7,7 @@ export declare class Signature {
     id_pagamento: string;
     ultima_assinatura: Date;
     data_expiracao: Date;
+    card_token: string;
     id_usuario: User | string;
 }
 export declare const SignatureSchema: mongoose.Schema<Signature, mongoose.Model<Signature, any, any, any, any>, {}, {}, {}, {}, "type", Signature>;

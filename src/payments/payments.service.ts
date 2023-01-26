@@ -5,10 +5,125 @@ import { Model } from "mongoose";
 import { SignatureDocument } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
 import { CreatePreferenceDto } from "./dtos/create-preference.dto";
+import { CreateSignatureDto } from "./dtos/create-signature.dto";
+import * as MP from 'mercadopago';
+import { CreateCardDto } from "./dtos/create-card.dto";
+import { UserDocument } from "src/schema";
 
 @Injectable()
 export class PaymentsService{
-    constructor(@InjectModel('assinaturas') private signatureModel: Model<SignatureDocument>){}
+    constructor(@InjectModel('assinaturas') private signatureModel: Model<SignatureDocument>,  @InjectModel('usuarios')
+    private userModel: Model<UserDocument>,){}
+
+
+    async notificaPamento(data: any){
+        try{
+            console.log('NOTIFICACAO', data);
+        }catch(e){
+            return e;
+        }
+    }
+
+    async createSignature(createSignature: CreateSignatureDto){
+        try{
+            var mercadopago = require('mercadopago');
+            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
+            const user = await this.userModel.findById(createSignature.id_usuario)
+
+            if(user){
+                const plan = {
+                    card_token_id: createSignature.card_token,
+                    status: 'authorized',
+                    payer_email: createSignature.email,
+                    back_url: 'https://mercadojusto.com.br',
+                    reason: 'Assinatura APP MJ',
+                    auto_recurring: {
+                        frequency: 2,
+                        frequency_type: 'days',
+                        transaction_amount: 1,
+                        currency_id: 'BRL',
+                       
+                    }, 
+                    external_reference: createSignature.id_usuario
+                };
+              var responsePlan = await  mercadopago.preapproval.create(plan);
+              
+              return responsePlan;
+            }else{
+                throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+            }
+            
+        }catch(e){
+            console.log(e)
+            return e;
+        }
+    }
+
+   async saveCard(createCard: CreateCardDto){
+        var mercadopago = require('mercadopago');
+        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
+        const user = await this.userModel.findById(createCard.user_id)
+        
+        if(user){
+            const signature = await this.signatureModel.findOne({id_usuario: createCard.user_id})
+            var cardInfo =  {
+                "card_number": createCard.card_number,
+                "expiration_month": createCard.expiration_month,
+                "expiration_year": createCard.expiration_year,
+                "security_code": createCard.security_code,
+                "cardholder": {
+                    "name": "Airton Araujo Sousa",
+                    "identification": {
+                        "type": "CPF",
+                        "number": "60916359301"
+                    }
+                }
+            }
+
+            var result = await mercadopago.card_token.save(cardInfo);
+            var token = result['response']['id'];
+            if(signature){
+                await this.signatureModel.updateOne({id_usuario: createCard.user_id}, {card_token:  token});
+            }else{
+                const createSignature = new this.signatureModel({id_pagamento: '', status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createCard.user_id, card_token: token});
+                createSignature.save();
+            }
+
+            return result['response'];
+
+        }else{
+          
+            throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+             
+        }
+        
+    }
+
+    async getCardInfo(user_id: string) {
+        var mercadopago = require('mercadopago');
+        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
+        const user = await this.userModel.findById(user_id)
+        
+        if(user){
+            const signature = await this.signatureModel.findOne({id_usuario: user_id})
+           if(signature){
+             if(signature['card_token']){
+                var result = await mercadopago.card_token.findById(signature['card_token']);
+
+                return result['response'];
+             }else{
+                throw new NotFoundException({mensagem: "Cartão não encontrado", codigo: "not_found_card"});
+             }
+           }else{
+            throw new NotFoundException({mensagem: "Usuário não tem assinatura vigente", codigo: "not_found_signature"});
+           }            
+
+        }else{
+          
+            throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+             
+        }
+    }
 
     async geraChavePix(createPixDto : CreatePixDto){
         var mercadopago = require('mercadopago');

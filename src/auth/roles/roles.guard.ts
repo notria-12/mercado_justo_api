@@ -60,11 +60,12 @@ export class RolesGuard implements CanActivate {
     }
     // public data accessible only to apps listed
     else if (isPublic) {
-      if (origin) {
-        return Object.keys(this.AppOriginsRolesRelation).includes(origin);
-      } else {
-        return false;
-      }
+      return true;
+      // if (origin) {
+      //   return Object.keys(this.AppOriginsRolesRelation).includes(origin);
+      // } else {
+      //   return false;
+      // }
     }
     else {
       return this.AppOriginsRolesRelation[origin].includes(role);

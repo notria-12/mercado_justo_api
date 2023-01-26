@@ -42,6 +42,11 @@ __decorate([
     __metadata("design:type", Date)
 ], Signature.prototype, "data_expiracao", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Signature.prototype, "card_token", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)({ type: user_schema_1.User }),
     (0, mongoose_1.Prop)({ type: mongoose.Schema.Types.ObjectId, ref: 'usuarios' }),
     __metadata("design:type", Object)

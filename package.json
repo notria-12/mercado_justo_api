@@ -35,6 +35,7 @@
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-express": "^8.1.2",
     "@nestjs/swagger": "^5.1.4",
+    "@types/mercadopago": "^1.5.8",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.1033.0",
     "aws-serverless-express": "^3.4.0",
