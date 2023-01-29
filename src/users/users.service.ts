@@ -9,7 +9,7 @@ import { LoginGoogleDto } from 'src/auth/dto';
 import { UserPayload } from 'src/auth/entities';
 import { ClsService } from 'nestjs-cls';
 import { UsersImport } from './users.import';
-import { SignatureDocument } from 'src/schema/signature.schema';
+import { SignatureDocument, tipo } from 'src/schema/signature.schema';
 
 @Injectable()
 export class UsersService {
@@ -42,7 +42,7 @@ export class UsersService {
       tipo_conta: 'cliente',
     });
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
-    const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*2), ultima_assinatura: Date.now(), id_usuario: user._id});
+    const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*7), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: tipo[2]});
     createSignature.save();
     return user;
   }

@@ -45,6 +45,7 @@ export declare class PaymentsController {
     }>;
     criaAssinatura(createSignature: CreateSignatureDto): Promise<any>;
     notificaPagamento(data: any): Promise<any>;
+    buscaPlano(id: string): Promise<any>;
     criaCartao(createCard: CreateCardDto): Promise<any>;
     buscaCartao(id: string): Promise<any>;
     buscaPreferencia(createPreference: CreatePreferenceDto): Promise<{

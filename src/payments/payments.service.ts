@@ -2,13 +2,14 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 import { Model } from "mongoose";
-import { SignatureDocument } from "src/schema/signature.schema";
+import { SignatureDocument, tipo } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
 import { CreatePreferenceDto } from "./dtos/create-preference.dto";
 import { CreateSignatureDto } from "./dtos/create-signature.dto";
 import * as MP from 'mercadopago';
 import { CreateCardDto } from "./dtos/create-card.dto";
 import { UserDocument } from "src/schema";
+import { preapproval } from "mercadopago";
 
 @Injectable()
 export class PaymentsService{
@@ -18,10 +19,48 @@ export class PaymentsService{
 
     async notificaPamento(data: any){
         try{
-            console.log('NOTIFICACAO', data);
+            console.log(data)
+           if(data['entity'] == 'preapproval'){
+            var signatureId : string =  data['data']['id'];
+            var signatureMP = await this.buscaAssinaturaMP(signatureId);
+            const signature = await this.signatureModel.findOne({id: signatureId})
+            if(signatureMP['response']['status'] == "authorized"){
+                console.log('status == authorized')
+                this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: true})
+                this.signatureModel.updateOne({id: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: signatureMP['response']['next_payment_date'], ultima_assinatura: signatureMP['response']['last_modified']});       
+                
+            }else{
+                console.log('status == ',signatureMP['response']['status'] );
+                if(signature['status']){
+                    var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                    if( remainingDays < 0){
+                        console.log('mudou assinatura pra false')
+                        this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                    }
+                }
+            }
+
+            
+           }
         }catch(e){
+
             return e;
         }
+    }
+
+    async buscaAssinaturaMP(id: string){
+       try{
+        var mercadopago = require('mercadopago');
+        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+        
+        var responsePlan = await  mercadopago.preapproval.findById(id);
+        console.log(responsePlan['response'])
+        return responsePlan;
+       }catch(e){
+        console.log(e)
+        return e;
+       } 
     }
 
     async createSignature(createSignature: CreateSignatureDto){
@@ -83,9 +122,9 @@ export class PaymentsService{
             var result = await mercadopago.card_token.save(cardInfo);
             var token = result['response']['id'];
             if(signature){
-                await this.signatureModel.updateOne({id_usuario: createCard.user_id}, {card_token:  token});
+                await this.signatureModel.updateOne({id_usuario: createCard.user_id}, {card_token:  token, tipo_pagamento: tipo[0]});
             }else{
-                const createSignature = new this.signatureModel({id_pagamento: '', status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createCard.user_id, card_token: token});
+                const createSignature = new this.signatureModel({id_pagamento: '', status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createCard.user_id, card_token: token, tipo_pagamento: tipo[0]});
                 createSignature.save();
             }
 
@@ -152,22 +191,18 @@ export class PaymentsService{
               }
             }
           };
-          
-         
-         
-        
          
          if(exists){
             if(exists['pagamento_pendente']){
                  data = await mercadopago.payment.findById(exists['id_pagamento']);
             }else{
                  data = await mercadopago.payment.create(payment_data);
-                await this.signatureModel.updateOne({id_usuario: createPixDto.id}, {id_pagamento:  data['body']['id']});
+                await this.signatureModel.updateOne({id_usuario: createPixDto.id}, {id_pagamento:  data['body']['id'], tipo_pagamento: tipo[1]});
             }
            
          }else{
-             data = await mercadopago.payment.create(payment_data);
-            const createSignature = new this.signatureModel({id_pagamento: data['body']['id'], status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createPixDto.id});
+            data = await mercadopago.payment.create(payment_data);
+            const createSignature = new this.signatureModel({id_pagamento: data['body']['id'], status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createPixDto.id, tipo_pagamento: tipo[1]});
             createSignature.save();
          }
          
@@ -175,51 +210,54 @@ export class PaymentsService{
     }
 
     async buscaAssinatura(id: string) {
-        console.log('ASSINATURA');
+      
         var mercadopago = require('mercadopago');
-        console.log('import');
-        console.log(process.env.MERCADO_PAGO_TOKEN)
+       
         mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
-        console.log('access token');
+        
         let signature = await this.signatureModel.findOne( {id_usuario:  id});
-        console.log(`assinatua: ${signature}`)
+        
         if(signature){
-             if(signature['id_pagamento'] != ''){
-                console.log('Id não vazio');
-                var data = await mercadopago.payment.findById(signature['id_pagamento']);
-                console.log(data);
-             
-                if(data['body']['status'] == 'pending' && (signature['pagamento_pendente'] == undefined || signature['pagamento_pendente'] == false)){
-                    await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  true});
-                    signature = await this.signatureModel.findOne( {id_usuario:  id});
-                }
-                else if((data['body']['status'] == 'cancelled' || data['body']['status'] == 'rejected') && (signature['pagamento_pendente'] == true)){
-                    await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false});
-                    signature = await this.signatureModel.findOne( {id_usuario:  id}); 
-                }else if(data['body']['status'] == 'approved'){
-                    var date_approved = new Date(data['body']['date_approved']);
-                    var daysSinceApproved = (Date.now() - date_approved.getTime()) / (1000 * 60 * 60 * 24);
-                    var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-                    
-                    
-                    //TODO: Mudar status assinatura nos dados do usuario
-                    if((daysSinceApproved > 0 && daysSinceApproved <= 30) && !signature['status'] ){
-                        console.log('Mudou assinatura para true')
-                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false, status: true, ultima_assinatura: date_approved, data_expiracao: date_approved.getTime() + (1000 * 60 * 60 * 24*30)});
+             if(signature['tipo_pagamento'] != tipo[0]){
+                if(signature['id_pagamento'] != ''){
+                    console.log('Id não vazio');
+                    var data = await mercadopago.payment.findById(signature['id_pagamento']);
+                    console.log(data);
+                 
+                    if(data['body']['status'] == 'pending' && (signature['pagamento_pendente'] == undefined || signature['pagamento_pendente'] == false)){
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  true});
+                        signature = await this.signatureModel.findOne( {id_usuario:  id});
+                    }
+                    else if((data['body']['status'] == 'cancelled' || data['body']['status'] == 'rejected') && (signature['pagamento_pendente'] == true)){
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false});
                         signature = await this.signatureModel.findOne( {id_usuario:  id}); 
-                    }else if(remainingDays < 0 && signature['status']){
+                    }else if(data['body']['status'] == 'approved'){
+                        var date_approved = new Date(data['body']['date_approved']);
+                        var daysSinceApproved = (Date.now() - date_approved.getTime()) / (1000 * 60 * 60 * 24);
+                        var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                        
+                        
+                        //TODO: Mudar status assinatura nos dados do usuario
+                        if((daysSinceApproved > 0 && daysSinceApproved <= 30) && !signature['status'] ){
+                            console.log('Mudou assinatura para true')
+                            this.userModel.findByIdAndUpdate(id, {status_assinante: true})
+                            await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false, status: true, ultima_assinatura: date_approved, data_expiracao: date_approved.getTime() + (1000 * 60 * 60 * 24*30)});
+                            signature = await this.signatureModel.findOne( {id_usuario:  id}); 
+                        }else if(remainingDays < 0 && signature['status']){
+                            console.log('Mudou assinatura para false')
+                            this.userModel.findByIdAndUpdate(id, {status_assinante: false})
+                            await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                            signature = await this.signatureModel.findOne( {id_usuario:  id}); 
+                        }
+                    }
+                 }else{
+                    console.log('Id  vazio');
+                    if((new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 0 && signature['status']){
                         console.log('Mudou assinatura para false')
                         await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
                         signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                     }
-                }
-             }else{
-                console.log('Id  vazio');
-                if((new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 0 && signature['status']){
-                    console.log('Mudou assinatura para false')
-                    await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
-                    signature = await this.signatureModel.findOne( {id_usuario:  id}); 
-                }
+                 }
              }
              
 

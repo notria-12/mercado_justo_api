@@ -40,6 +40,9 @@ let PaymentsController = class PaymentsController {
     notificaPagamento(data) {
         return this.paymentsService.notificaPamento(data);
     }
+    buscaPlano(id) {
+        return this.paymentsService.buscaAssinaturaMP(id);
+    }
     criaCartao(createCard) {
         return this.paymentsService.saveCard(createCard);
     }
@@ -91,6 +94,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "notificaPagamento", null);
+__decorate([
+    (0, common_1.Get)('plano/:id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "buscaPlano", null);
 __decorate([
     (0, common_1.Post)('card/'),
     openapi.ApiResponse({ status: 201, type: Object }),

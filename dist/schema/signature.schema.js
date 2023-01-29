@@ -9,11 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignatureSchema = exports.Signature = void 0;
+exports.SignatureSchema = exports.Signature = exports.tipo = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const swagger_1 = require("@nestjs/swagger");
 const mongoose = require("mongoose");
 const user_schema_1 = require("./user.schema");
+exports.tipo = ['card', 'pix', 'free'];
 let Signature = class Signature {
 };
 __decorate([
@@ -46,6 +47,16 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], Signature.prototype, "card_token", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Signature.prototype, "id_assinatura", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ enum: exports.tipo }),
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Signature.prototype, "tipo_pagamento", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ type: user_schema_1.User }),
     (0, mongoose_1.Prop)({ type: mongoose.Schema.Types.ObjectId, ref: 'usuarios' }),

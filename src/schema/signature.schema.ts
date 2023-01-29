@@ -3,6 +3,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import * as mongoose from 'mongoose';
 import { User } from "./user.schema";
 
+
+export const tipo = ['card', 'pix', 'free'] as const;
+export type TipoAssinatura = typeof tipo[number];
 export type SignatureDocument = Signature & mongoose.Document;
 
 @Schema()
@@ -25,6 +28,12 @@ export class Signature{
     @ApiProperty()
     @Prop()
     card_token: string;
+    @ApiProperty()
+    @Prop()
+    id_assinatura: string;
+    @ApiProperty({enum: tipo})
+    @Prop()
+    tipo_pagamento: TipoAssinatura;
     @ApiProperty({type: User})
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'usuarios' })
     id_usuario: User | string;

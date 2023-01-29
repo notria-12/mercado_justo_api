@@ -38,6 +38,11 @@ export class PaymentsController{
       return this.paymentsService.notificaPamento(data)
     }
 
+    @Get('plano/:id')
+    buscaPlano(@Param('id') id: string){
+      return this.paymentsService.buscaAssinaturaMP(id);
+    }
+
     @Post('card/')
     criaCartao(@Body() createCard: CreateCardDto){
       
