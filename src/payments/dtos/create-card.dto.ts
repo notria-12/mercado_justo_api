@@ -16,6 +16,12 @@ export class CreateCardDto{
     @IsString()
     @IsNotEmpty()
     security_code: string
+    @IsString()
+    @IsNotEmpty()
+    holder_name: string
+    @IsString()
+    @IsNotEmpty()
+    cpf: string
 
 }
 

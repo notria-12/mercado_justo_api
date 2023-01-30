@@ -1,5 +1,6 @@
+import { CreateCardDto } from "./create-card.dto";
 export declare class CreateSignatureDto {
     email: string;
-    card_token: string;
     id_usuario: string;
+    card: CreateCardDto;
 }

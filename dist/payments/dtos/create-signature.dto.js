@@ -11,10 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateSignatureDto = void 0;
 const openapi = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 const common_1 = require("../../common");
+const create_card_dto_1 = require("./create-card.dto");
 class CreateSignatureDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { email: { required: true, type: () => String }, card_token: { required: true, type: () => String }, id_usuario: { required: true, type: () => String } };
+        return { email: { required: true, type: () => String }, id_usuario: { required: true, type: () => String }, card: { required: true, type: () => require("./create-card.dto").CreateCardDto } };
     }
 }
 __decorate([
@@ -26,11 +28,11 @@ __decorate([
     (0, common_1.IsString)(),
     (0, common_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateSignatureDto.prototype, "card_token", void 0);
-__decorate([
-    (0, common_1.IsString)(),
-    (0, common_1.IsNotEmpty)(),
-    __metadata("design:type", String)
 ], CreateSignatureDto.prototype, "id_usuario", void 0);
+__decorate([
+    (0, class_validator_1.IsInstance)(create_card_dto_1.CreateCardDto),
+    (0, common_1.IsNotEmpty)(),
+    __metadata("design:type", create_card_dto_1.CreateCardDto)
+], CreateSignatureDto.prototype, "card", void 0);
 exports.CreateSignatureDto = CreateSignatureDto;
 //# sourceMappingURL=create-signature.dto.js.map

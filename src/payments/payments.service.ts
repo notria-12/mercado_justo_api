@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { HttpException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 import { Model } from "mongoose";
@@ -23,23 +23,31 @@ export class PaymentsService{
            if(data['entity'] == 'preapproval'){
             var signatureId : string =  data['data']['id'];
             var signatureMP = await this.buscaAssinaturaMP(signatureId);
-            const signature = await this.signatureModel.findOne({id: signatureId})
-            if(signatureMP['response']['status'] == "authorized"){
-                console.log('status == authorized')
-                this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: true})
-                this.signatureModel.updateOne({id: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: signatureMP['response']['next_payment_date'], ultima_assinatura: signatureMP['response']['last_modified']});       
-                
-            }else{
-                console.log('status == ',signatureMP['response']['status'] );
-                if(signature['status']){
-                    var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-                    if( remainingDays < 0){
-                        console.log('mudou assinatura pra false')
-                        this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
-                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                if(data['action'] == 'updated'){
+                   
+                    const signature = await this.signatureModel.findOne({id_assinatura: signatureId})
+                    console.log(signature)
+                    if(signatureMP['response']['status'] == "authorized"){
+                        console.log('status == authorized')
+                        console.log('mudou assinatura pra true')
+                       await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: true})
+                       await this.signatureModel.updateOne({id_assinatura: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: signatureMP['response']['next_payment_date'], ultima_assinatura: signatureMP['response']['last_modified']});       
+                        
+                    }else{
+                        console.log('status == ',signatureMP['response']['status'] );
+                        if(signature['status']){
+                            var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                            if( remainingDays < 0){
+                                console.log('mudou assinatura pra false')
+                                await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
+                                await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                            }
+                        }
                     }
                 }
-            }
+                if(data['action'] == 'created'){
+                    await this.signatureModel.updateOne({id_usuario: signatureMP['response']['external_reference']}, {status:  true, data_expiracao:signatureMP['response']['next_payment_date'], ultima_assinatura: signatureMP['response']['last_modified']});
+                }
 
             
            }
@@ -70,30 +78,39 @@ export class PaymentsService{
             const user = await this.userModel.findById(createSignature.id_usuario)
 
             if(user){
-                const plan = {
-                    card_token_id: createSignature.card_token,
-                    status: 'authorized',
-                    payer_email: createSignature.email,
-                    back_url: 'https://mercadojusto.com.br',
-                    reason: 'Assinatura APP MJ',
-                    auto_recurring: {
-                        frequency: 2,
-                        frequency_type: 'days',
-                        transaction_amount: 1,
-                        currency_id: 'BRL',
-                       
-                    }, 
-                    external_reference: createSignature.id_usuario
-                };
-              var responsePlan = await  mercadopago.preapproval.create(plan);
-              
-              return responsePlan;
+
+                var card = await this.saveCard(createSignature.card);
+                console.log('Card status: ', card);
+                
+                if(card['status'] == 'active'){
+                    const plan = {
+                        card_token_id: card['id'],
+                        status: 'authorized',
+                        payer_email: createSignature.email,
+                        back_url: 'https://mercadojusto.com.br',
+                        reason: 'Assinatura APP MJ',
+                        auto_recurring: {
+                            frequency: 2,
+                            frequency_type: 'days',
+                            transaction_amount: 1,
+                            currency_id: 'BRL',
+                           
+                        }, 
+                        external_reference: createSignature.id_usuario
+                    };
+                  var responsePlan = await  mercadopago.preapproval.create(plan);
+                  await this.signatureModel.updateOne({id_usuario: createSignature.id_usuario}, {id_assinatura: responsePlan['response']['id']});
+                  return responsePlan['response'];
+                }else{
+                    return new UnauthorizedException(card);
+                }
+                
             }else{
                 throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
             }
             
         }catch(e){
-            console.log(e)
+           
             return e;
         }
     }
@@ -104,17 +121,18 @@ export class PaymentsService{
         const user = await this.userModel.findById(createCard.user_id)
         
         if(user){
-            const signature = await this.signatureModel.findOne({id_usuario: createCard.user_id})
+            try {
+                const signature = await this.signatureModel.findOne({id_usuario: createCard.user_id})
             var cardInfo =  {
                 "card_number": createCard.card_number,
                 "expiration_month": createCard.expiration_month,
                 "expiration_year": createCard.expiration_year,
                 "security_code": createCard.security_code,
                 "cardholder": {
-                    "name": "Airton Araujo Sousa",
+                    "name": createCard.holder_name,
                     "identification": {
                         "type": "CPF",
-                        "number": "60916359301"
+                        "number": createCard.cpf
                     }
                 }
             }
@@ -130,6 +148,9 @@ export class PaymentsService{
 
             return result['response'];
 
+            } catch (e) {
+                return e;
+            }
         }else{
           
             throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
@@ -240,12 +261,12 @@ export class PaymentsService{
                         //TODO: Mudar status assinatura nos dados do usuario
                         if((daysSinceApproved > 0 && daysSinceApproved <= 30) && !signature['status'] ){
                             console.log('Mudou assinatura para true')
-                            this.userModel.findByIdAndUpdate(id, {status_assinante: true})
+                            await this.userModel.findByIdAndUpdate(id, {status_assinante: true})
                             await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {pagamento_pendente:  false, status: true, ultima_assinatura: date_approved, data_expiracao: date_approved.getTime() + (1000 * 60 * 60 * 24*30)});
                             signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                         }else if(remainingDays < 0 && signature['status']){
                             console.log('Mudou assinatura para false')
-                            this.userModel.findByIdAndUpdate(id, {status_assinante: false})
+                            await this.userModel.findByIdAndUpdate(id, {status_assinante: false})
                             await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
                             signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                         }
@@ -254,6 +275,7 @@ export class PaymentsService{
                     console.log('Id  vazio');
                     if((new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24) < 0 && signature['status']){
                         console.log('Mudou assinatura para false')
+                        await this.userModel.findByIdAndUpdate(id, {status_assinante: false})
                         await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
                         signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                     }
