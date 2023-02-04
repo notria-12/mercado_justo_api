@@ -10,6 +10,7 @@ export declare class PaymentsService {
     private userModel;
     constructor(signatureModel: Model<SignatureDocument>, userModel: Model<UserDocument>);
     notificaPamento(data: any): Promise<any>;
+    capturePayment(id: Number): Promise<any>;
     buscaAssinaturaMP(id: string): Promise<any>;
     createSignature(createSignature: CreateSignatureDto): Promise<any>;
     saveCard(createCard: CreateCardDto): Promise<any>;

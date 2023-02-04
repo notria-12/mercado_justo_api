@@ -1,6 +1,6 @@
-import { HttpException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import {  Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-
+import axios from 'axios';
 import { Model } from "mongoose";
 import { SignatureDocument, tipo } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
@@ -21,8 +21,8 @@ export class PaymentsService{
         try{
             console.log(data)
            if(data['entity'] == 'preapproval'){
-            var signatureId : string =  data['data']['id'];
-            var signatureMP = await this.buscaAssinaturaMP(signatureId);
+            let signatureId : string =  data['data']['id'];
+            let signatureMP = await this.buscaAssinaturaMP(signatureId);
                 if(data['action'] == 'updated'){
                    
                     const signature = await this.signatureModel.findOne({id_assinatura: signatureId})
@@ -36,7 +36,7 @@ export class PaymentsService{
                     }else{
                         console.log('status == ',signatureMP['response']['status'] );
                         if(signature['status']){
-                            var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                            let remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
                             if( remainingDays < 0){
                                 console.log('mudou assinatura pra false')
                                 await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
@@ -51,10 +51,55 @@ export class PaymentsService{
 
             
            }
+
+           if(data['entity'] == 'authorized_payment'){
+               let paymentResult = await this.capturePayment(data['data']['id']);
+               let signatureId = paymentResult['preapproval_id'];
+               const signature = await this.signatureModel.findOne({id_assinatura: signatureId})
+               if(paymentResult['status'] == 'scheduled'){
+                console.log('mudou assinatura pra true')
+                await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: true})
+                await this.signatureModel.updateOne({id_assinatura: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: paymentResult['debit_date'], ultima_assinatura: paymentResult['last_modified'], pagamento_pendente: false});       
+               }
+               if(paymentResult['status'] == 'recycling'){
+                if(signature['status']){
+                    let remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                    if( remainingDays < 0){
+                        console.log('mudou assinatura pra false')
+                        await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false, pagamento_pendente: true, id_pagamento: data['data']['id'], tipo_pagamento: tipo[0]});
+                    }
+                }
+               }
+               if(paymentResult['status'] == 'cancelled'){
+                if(signature['status'] || signature['pagamento_pendente']){
+                    let remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                    if( remainingDays < 0){
+                        console.log('mudou assinatura pra false')
+                        await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false, pagamento_pendente: false});
+                    }
+                }
+               }
+           }
         }catch(e){
 
             return e;
         }
+    }
+
+    async capturePayment(id: Number){
+        try {
+            const response = await axios.get(`https://api.mercadopago.com/authorized_payments/${id}`, {
+              headers: {
+                'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
+              }
+            });
+            console.log(response.data)
+            return response.data;
+          } catch (error) {
+            console.error(error);
+          }
     }
 
     async buscaAssinaturaMP(id: string){
@@ -214,7 +259,7 @@ export class PaymentsService{
           };
          
          if(exists){
-            if(exists['pagamento_pendente']){
+            if(exists['pagamento_pendente'] && exists['tipo_pagamento'] != tipo[0]){
                  data = await mercadopago.payment.findById(exists['id_pagamento']);
             }else{
                  data = await mercadopago.payment.create(payment_data);
@@ -258,7 +303,7 @@ export class PaymentsService{
                         var remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
                         
                         
-                        //TODO: Mudar status assinatura nos dados do usuario
+                        
                         if((daysSinceApproved > 0 && daysSinceApproved <= 30) && !signature['status'] ){
                             console.log('Mudou assinatura para true')
                             await this.userModel.findByIdAndUpdate(id, {status_assinante: true})
@@ -280,6 +325,18 @@ export class PaymentsService{
                         signature = await this.signatureModel.findOne( {id_usuario:  id}); 
                     }
                  }
+             }
+
+             if(signature['tipo_pagamento'] == tipo[0]){
+                if(signature['status']){
+                    let remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                    if( remainingDays < 0){
+                        console.log('mudou assinatura pra false')
+                        await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false});
+                        signature = await this.signatureModel.findOne( {id_usuario:  id}); 
+                    }
+                }
              }
              
 
