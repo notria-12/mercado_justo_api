@@ -48,9 +48,15 @@ export class PaymentsController{
       
       return this.paymentsService.saveCard(createCard);
     }
+
     @Get('card/:id')
     buscaCartao(@Param('id') id: string){
       return this.paymentsService.getCardInfo(id);
+    }
+
+    @Get('fatura/:id')
+    buscaFatura(@Param('id') id: string){
+      return this.paymentsService.capturePayment(id);
     }
 
     @Post('preferencias/')

@@ -88,7 +88,7 @@ export class PaymentsService{
         }
     }
 
-    async capturePayment(id: Number){
+    async capturePayment(id: string){
         try {
             const response = await axios.get(`https://api.mercadopago.com/authorized_payments/${id}`, {
               headers: {
