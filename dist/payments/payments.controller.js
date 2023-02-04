@@ -49,6 +49,9 @@ let PaymentsController = class PaymentsController {
     buscaCartao(id) {
         return this.paymentsService.getCardInfo(id);
     }
+    buscaFatura(id) {
+        return this.paymentsService.capturePayment(id);
+    }
     buscaPreferencia(createPreference) {
         return this.paymentsService.buscaPreferencia(createPreference);
     }
@@ -118,6 +121,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "buscaCartao", null);
+__decorate([
+    (0, common_1.Get)('fatura/:id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "buscaFatura", null);
 __decorate([
     (0, common_1.Post)('preferencias/'),
     openapi.ApiResponse({ status: 201 }),
