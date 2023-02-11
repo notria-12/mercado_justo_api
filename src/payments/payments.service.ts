@@ -46,7 +46,7 @@ export class PaymentsService{
                     }
                 }
                 if(data['action'] == 'created'){
-                    await this.signatureModel.updateOne({id_usuario: signatureMP['response']['external_reference']}, {status:  true, data_expiracao:signatureMP['response']['next_payment_date'], ultima_assinatura: signatureMP['response']['last_modified']});
+                    await this.signatureModel.updateOne({id_usuario: signatureMP['response']['external_reference']}, {status:  true, data_expiracao:new Date(signatureMP['response']['last_modified']).getTime() + (1000 * 60 * 60 * 24*2), ultima_assinatura: signatureMP['response']['last_modified']});
                 }
 
             
