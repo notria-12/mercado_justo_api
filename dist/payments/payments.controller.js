@@ -31,6 +31,12 @@ let PaymentsController = class PaymentsController {
     buscaAssinatura(id) {
         return this.paymentsService.buscaAssinatura(id);
     }
+    atualizaAssinatura(createCard) {
+        return this.paymentsService.updateSignature(createCard);
+    }
+    cancelaAssinatura(id) {
+        return this.paymentsService.cancelSingnature(id);
+    }
     buscaDiasRestantes(id) {
         return this.paymentsService.buscaDiasRestantes(id);
     }
@@ -48,6 +54,9 @@ let PaymentsController = class PaymentsController {
     }
     buscaCartao(id) {
         return this.paymentsService.getCardInfo(id);
+    }
+    deletaCartao(id) {
+        return this.paymentsService.deleteCard(id);
     }
     buscaFatura(id) {
         return this.paymentsService.capturePayment(id);
@@ -72,6 +81,22 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "buscaAssinatura", null);
+__decorate([
+    (0, common_1.Put)(),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_card_dto_1.CreateCardDto]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "atualizaAssinatura", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "cancelaAssinatura", null);
 __decorate([
     (0, common_1.Get)('dias/:id'),
     openapi.ApiResponse({ status: 200 }),
@@ -121,6 +146,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "buscaCartao", null);
+__decorate([
+    (0, common_1.Delete)('card/:id'),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PaymentsController.prototype, "deletaCartao", null);
 __decorate([
     (0, common_1.Get)('fatura/:id'),
     openapi.ApiResponse({ status: 200, type: Object }),

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { Public } from "src/common";
 import { CreateCardDto } from "./dtos/create-card.dto";
 import { CreatePixDto } from "./dtos/create-pix.dto";
@@ -18,6 +18,14 @@ export class PaymentsController{
     @Get(':id')
     buscaAssinatura(@Param('id') id: string) {
       return this.paymentsService.buscaAssinatura(id);
+    }
+    @Put()
+    atualizaAssinatura(@Body() createCard: CreateCardDto) {
+      return this.paymentsService.updateSignature(createCard);
+    }
+    @Delete(':id')
+    cancelaAssinatura(@Param('id') id: string) {
+      return this.paymentsService.cancelSingnature(id);
     }
     
 
@@ -52,6 +60,10 @@ export class PaymentsController{
     @Get('card/:id')
     buscaCartao(@Param('id') id: string){
       return this.paymentsService.getCardInfo(id);
+    }
+    @Delete('card/:id')
+    deletaCartao(@Param('id') id: string){
+      return this.paymentsService.deleteCard(id);
     }
 
     @Get('fatura/:id')

@@ -15,6 +15,8 @@ export declare class PaymentsController {
     buscaAssinatura(id: string): Promise<import("../schema/signature.schema").Signature & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     }>;
+    atualizaAssinatura(createCard: CreateCardDto): Promise<any>;
+    cancelaAssinatura(id: string): Promise<any>;
     buscaDiasRestantes(id: string): Promise<{
         dias_restantes: number;
     }>;
@@ -23,6 +25,7 @@ export declare class PaymentsController {
     buscaPlano(id: string): Promise<any>;
     criaCartao(createCard: CreateCardDto): Promise<any>;
     buscaCartao(id: string): Promise<any>;
+    deletaCartao(id: string): Promise<any>;
     buscaFatura(id: string): Promise<any>;
     buscaPreferencia(createPreference: CreatePreferenceDto): Promise<{
         id: any;

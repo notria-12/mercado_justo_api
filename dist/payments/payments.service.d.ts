@@ -12,6 +12,9 @@ export declare class PaymentsService {
     notificaPamento(data: any): Promise<any>;
     capturePayment(id: string): Promise<any>;
     buscaAssinaturaMP(id: string): Promise<any>;
+    cancelSingnature(id: string): Promise<any>;
+    updateSignature(createCard: CreateCardDto): Promise<any>;
+    deleteCard(id: string): Promise<any>;
     createSignature(createSignature: CreateSignatureDto): Promise<any>;
     saveCard(createCard: CreateCardDto): Promise<any>;
     getCardInfo(user_id: string): Promise<any>;

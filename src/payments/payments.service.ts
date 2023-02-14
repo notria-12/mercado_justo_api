@@ -10,6 +10,7 @@ import * as MP from 'mercadopago';
 import { CreateCardDto } from "./dtos/create-card.dto";
 import { UserDocument } from "src/schema";
 import { preapproval } from "mercadopago";
+import { sign } from "crypto";
 
 @Injectable()
 export class PaymentsService{
@@ -63,11 +64,11 @@ export class PaymentsService{
                }
                if(paymentResult['status'] == 'recycling'){
                 if(signature['status']){
-                    let remainingDays = (new Date(signature['data_expiracao']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+                    let remainingDays = (new Date(paymentResult['debit_date']).getTime() - Date.now()) / (1000 * 60 * 60 * 24);
                     if( remainingDays < 0){
                         console.log('mudou assinatura pra false')
                         await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: false})
-                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false, pagamento_pendente: true, id_pagamento: data['data']['id'], tipo_pagamento: tipo[0]});
+                        await this.signatureModel.updateOne({id_usuario: signature['id_usuario']}, {status:  false, pagamento_pendente: true, id_pagamento: data['data']['id'], tipo_pagamento: tipo[0], data_expiracao: paymentResult['debit_date']});
                     }
                 }
                }
@@ -116,6 +117,82 @@ export class PaymentsService{
        } 
     }
 
+    async cancelSingnature(id: string){
+        try {
+            var mercadopago = require('mercadopago');
+            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
+            var cancelResponse = await  mercadopago.preapproval.cancel(id);
+            if(cancelResponse['response']['status'] == "cancelled"){
+                
+                await this.signatureModel.updateOne({id_assinatura: id}, {pagamento_pendente: false,card_token: '', tipo_pagamento: tipo[2]});
+                
+            }
+            return cancelResponse;
+        } catch (error) {
+            return error;
+        }
+    }
+
+    async updateSignature(createCard: CreateCardDto){
+        try{
+            var mercadopago = require('mercadopago');
+            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
+            const user = await this.userModel.findById(createCard.user_id)
+
+            if(user){
+                const signature = await this.signatureModel.findOne({id_usuario: createCard.user_id});
+                if(signature ){
+                    var old_card = signature['card_token'];
+                    let card = await this.saveCard(createCard);
+                    
+                    
+                    if(card['status'] == 'active'){
+                        const plan = {
+                            id: signature['id_assinatura'],
+                            card_token_id: card['id'],
+                            
+                        };
+                       
+                      var responsePlan = await  mercadopago.preapproval.update(plan);
+                      return responsePlan['response'];
+                    }else{
+                        return new UnauthorizedException(card);
+                    }
+
+                }else{
+                    throw new NotFoundException({mensagem: "Usuário não tem assinatura vigente", codigo: "not_found_signature"});
+                }
+               
+                
+            }else{
+                throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+            }
+            
+        }catch(e){
+            await this.signatureModel.updateOne({id_usuario: createCard.user_id}, {card_token: old_card})
+            throw new UnauthorizedException(e);
+        }
+    }
+
+    async deleteCard(id: string){
+        try {
+            var mercadopago = require('mercadopago');
+            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
+            const user = await this.userModel.findById(id)
+            if(user){
+                const signature = await this.signatureModel.findOne({id_usuario: id});
+
+                var result = await mercadopago.card_token.delete(signature['card_token']);
+                await this.signatureModel.updateOne({id_usuario: id}, {card_token:  ''});
+
+            }else{
+                throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+            }
+        } catch (e) {
+            return e;
+        }
+    }
+
     async createSignature(createSignature: CreateSignatureDto){
         try{
             var mercadopago = require('mercadopago');
@@ -135,7 +212,7 @@ export class PaymentsService{
                         back_url: 'https://mercadojusto.com.br',
                         reason: 'Assinatura APP MJ',
                         auto_recurring: {
-                            frequency: 2,
+                            frequency: 7,
                             frequency_type: 'days',
                             transaction_amount: 1,
                             currency_id: 'BRL',
@@ -143,8 +220,12 @@ export class PaymentsService{
                         }, 
                         external_reference: createSignature.id_usuario
                     };
+                    
                   var responsePlan = await  mercadopago.preapproval.create(plan);
-                  await this.signatureModel.updateOne({id_usuario: createSignature.id_usuario}, {id_assinatura: responsePlan['response']['id']});
+                  if(!(responsePlan['status'] >= 200 && responsePlan['status'] <= 299)){
+                    throw new UnauthorizedException();
+                  }
+
                   return responsePlan['response'];
                 }else{
                     return new UnauthorizedException(card);
@@ -156,7 +237,7 @@ export class PaymentsService{
             
         }catch(e){
            
-            return e;
+           throw new UnauthorizedException(e);
         }
     }
 
@@ -181,7 +262,7 @@ export class PaymentsService{
                     }
                 }
             }
-
+      
             var result = await mercadopago.card_token.save(cardInfo);
             var token = result['response']['id'];
             if(signature){
