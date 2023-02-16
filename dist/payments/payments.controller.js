@@ -90,7 +90,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PaymentsController.prototype, "atualizaAssinatura", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
+    (0, common_1.Put)('/credit-card/:id'),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
