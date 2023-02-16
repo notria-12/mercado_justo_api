@@ -52,7 +52,7 @@ let PaymentsService = class PaymentsService {
                     }
                 }
                 if (data['action'] == 'created') {
-                    await this.signatureModel.updateOne({ id_usuario: signatureMP['response']['external_reference'] }, { status: true, data_expiracao: new Date(signatureMP['response']['last_modified']).getTime() + (1000 * 60 * 60 * 24 * 7), ultima_assinatura: signatureMP['response']['last_modified'] });
+                    await this.signatureModel.updateOne({ id_usuario: signatureMP['response']['external_reference'] }, { status: true, data_expiracao: new Date(signatureMP['response']['last_modified']).getTime() + (1000 * 60 * 60 * 24 * 7), ultima_assinatura: signatureMP['response']['last_modified'], id_assinatura: signatureId });
                 }
             }
             if (data['entity'] == 'authorized_payment') {
@@ -63,6 +63,11 @@ let PaymentsService = class PaymentsService {
                     console.log('mudou assinatura pra true');
                     await this.userModel.findByIdAndUpdate(signature['id_usuario'], { status_assinante: true });
                     await this.signatureModel.updateOne({ id_assinatura: signatureId }, { tipo_pagamento: signature_schema_1.tipo[0], status: true, data_expiracao: paymentResult['debit_date'], ultima_assinatura: paymentResult['last_modified'], pagamento_pendente: false });
+                }
+                if (paymentResult['status'] == 'processed') {
+                    console.log('mudou assinatura pra true');
+                    await this.userModel.findByIdAndUpdate(signature['id_usuario'], { status_assinante: true });
+                    await this.signatureModel.updateOne({ id_assinatura: signatureId }, { tipo_pagamento: signature_schema_1.tipo[0], status: true, data_expiracao: paymentResult['expire_date'], ultima_assinatura: paymentResult['last_modified'], pagamento_pendente: false });
                 }
                 if (paymentResult['status'] == 'recycling') {
                     if (signature['status']) {
