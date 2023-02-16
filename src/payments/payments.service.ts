@@ -57,10 +57,10 @@ export class PaymentsService{
                let paymentResult = await this.capturePayment(data['data']['id']);
                let signatureId = paymentResult['preapproval_id'];
                const signature = await this.signatureModel.findOne({id_assinatura: signatureId})
-               if(paymentResult['status'] == 'scheduled'){
+               if(paymentResult['status'] == 'scheduled' || paymentResult['status'] == 'processed'){
                 console.log('mudou assinatura pra true')
                 await this.userModel.findByIdAndUpdate(signature['id_usuario'], {status_assinante: true})
-                await this.signatureModel.updateOne({id_assinatura: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: paymentResult['debit_date'], ultima_assinatura: paymentResult['last_modified'], pagamento_pendente: false});       
+                await this.signatureModel.updateOne({id_assinatura: signatureId}, {tipo_pagamento: tipo[0], status: true, data_expiracao: paymentResult['expire_date'], ultima_assinatura: paymentResult['last_modified'], pagamento_pendente: false});       
                }
                if(paymentResult['status'] == 'recycling'){
                 if(signature['status']){
