@@ -366,7 +366,7 @@ export class PaymentsService{
         
         if(signature){
              if(signature['tipo_pagamento'] != tipo[0]){
-                if(signature['id_pagamento'] != ''){
+                if(signature['id_pagamento'] != '' && signature['tipo_pagamento'] == tipo[1]){
                     console.log('Id não vazio');
                     var data = await mercadopago.payment.findById(signature['id_pagamento']);
                     console.log(data);

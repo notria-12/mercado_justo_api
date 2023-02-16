@@ -336,7 +336,7 @@ let PaymentsService = class PaymentsService {
         let signature = await this.signatureModel.findOne({ id_usuario: id });
         if (signature) {
             if (signature['tipo_pagamento'] != signature_schema_1.tipo[0]) {
-                if (signature['id_pagamento'] != '') {
+                if (signature['id_pagamento'] != '' && signature['tipo_pagamento'] == signature_schema_1.tipo[1]) {
                     console.log('Id não vazio');
                     var data = await mercadopago.payment.findById(signature['id_pagamento']);
                     console.log(data);
