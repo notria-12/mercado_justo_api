@@ -23,7 +23,7 @@ export class PaymentsController{
     atualizaAssinatura(@Body() createCard: CreateCardDto) {
       return this.paymentsService.updateSignature(createCard);
     }
-    @Delete(':id')
+    @Put('/credit-card/:id')
     cancelaAssinatura(@Param('id') id: string) {
       return this.paymentsService.cancelSingnature(id);
     }
