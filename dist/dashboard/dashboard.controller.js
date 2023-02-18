@@ -35,7 +35,7 @@ __decorate([
 ], DashboardController.prototype, "findOne", null);
 DashboardController = __decorate([
     (0, common_2.ApiController)('Dashboard', [entities_1.DashboardResponse], true),
-    (0, roles_1.Roles)(roles_1.Role.Admin),
+    (0, roles_1.Roles)(roles_1.Role.Admin, roles_1.Role.Cliente),
     (0, common_1.Controller)('dashboard'),
     __metadata("design:paramtypes", [dashboard_service_1.DashboardService])
 ], DashboardController);

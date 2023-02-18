@@ -85,6 +85,7 @@ __decorate([
 ], ProductsController.prototype, "getList", null);
 __decorate([
     (0, swagger_1.ApiOkResponse)(common_2.ApiResSchema.apply(schema_1.Product)),
+    (0, roles_1.Roles)(roles_1.Role.Operador, roles_1.Role.Gerente, roles_1.Role.Cliente),
     (0, common_1.Get)(':id'),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),

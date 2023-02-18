@@ -39,6 +39,7 @@ export class ProductsController {
   }
 
   @ApiOkResponse(ApiResSchema.apply(Product))
+  @Roles(Role.Operador, Role.Gerente, Role.Cliente)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productModelsService.findOne(id);

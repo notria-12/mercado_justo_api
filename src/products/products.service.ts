@@ -6,12 +6,17 @@ import { ProductDocument } from 'src/schema';
 import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto } from 'src/common';
 import { ProductsImport } from './products.import';
 import { GetProductsDto } from './dto/get-products.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ClsService } from 'nestjs-cls/dist/src/lib/cls.service';
+import { UserPayload } from 'src/auth/entities/user-payload.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel('produtos')
     private schemaModel: Model<ProductDocument>,
+    private eventEmitter: EventEmitter2,
+    private clsService: ClsService,
     private productsImport: ProductsImport
   ) { }
 
@@ -57,6 +62,14 @@ export class ProductsService {
   
 
   async findOne(id: string) {
+    this.eventEmitter.emit(
+      'access.produtos',
+      {
+        documento: id,
+        usuario: this.clsService.get<UserPayload>('user').userId || null,
+        colecao: 'produtos'
+      }
+    );
     return await this.schemaModel.findById(id);
   }
   async findByCategory(category: string){

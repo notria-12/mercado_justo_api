@@ -62,10 +62,10 @@ export class AccessService {
             { $sort: { ano: 1, mes: 1 } }
           ],
           produtos: [
-            { $match: { colecao: 'precos' } },
+            { $match: { colecao: 'produtos' } },
             {
               $lookup: {
-                from: 'precos',
+                from: 'produtos',
                 localField: 'documento',
                 foreignField: '_id',
                 as: 'documento'
@@ -74,7 +74,7 @@ export class AccessService {
             {
               $group: {
                 _id: {
-                  preco: '$documento',
+                  produto: '$documento',
                   mes: { $month: '$data_hora' },
                   ano: { $year: '$data_hora' },
                 },
@@ -84,7 +84,7 @@ export class AccessService {
             { $sort: { '_id.ano': 1, '_id.mes': 1 } },
             {
               $group: {
-                _id: { preco: '$_id.preco' },
+                _id: { produto: '$_id.produto' },
                 acessos: {
                   $push: {
                     mes: '$_id.mes',
@@ -98,18 +98,9 @@ export class AccessService {
               $project: {
                 _id: 0,
                 acessos: 1,
-                preco: { $arrayElemAt: ['$_id.preco', 0] },
+                produto: { $arrayElemAt: ['$_id.produto', 0] },
               }
             },
-            {
-              $lookup: {
-                from: 'produtos',
-                localField: 'preco.produto',
-                foreignField: '_id',
-                as: 'preco.produto'
-              }
-            },
-            { $unwind: '$preco.produto' },
           ],
           mercados: [
             { $match: { colecao: 'mercados' } },

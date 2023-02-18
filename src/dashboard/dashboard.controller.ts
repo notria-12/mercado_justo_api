@@ -6,7 +6,7 @@ import { DashboardResponse } from './entities';
 import { Roles, Role } from 'src/auth/roles';
 
 @ApiController('Dashboard', [DashboardResponse], true)
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Cliente)
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) { }

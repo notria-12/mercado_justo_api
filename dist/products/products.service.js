@@ -19,9 +19,14 @@ const mongoose_2 = require("mongoose");
 const schema_1 = require("../schema");
 const common_2 = require("../common");
 const products_import_1 = require("./products.import");
+const event_emitter_1 = require("@nestjs/event-emitter");
+const cls_service_1 = require("nestjs-cls/dist/src/lib/cls.service");
+const user_payload_entity_1 = require("../auth/entities/user-payload.entity");
 let ProductsService = class ProductsService {
-    constructor(schemaModel, productsImport) {
+    constructor(schemaModel, eventEmitter, clsService, productsImport) {
         this.schemaModel = schemaModel;
+        this.eventEmitter = eventEmitter;
+        this.clsService = clsService;
         this.productsImport = productsImport;
     }
     async create(createProductDto) {
@@ -56,6 +61,11 @@ let ProductsService = class ProductsService {
         return await (0, common_2.findAllWithPaginationSearch)(this.schemaModel, query);
     }
     async findOne(id) {
+        this.eventEmitter.emit('access.produtos', {
+            documento: id,
+            usuario: this.clsService.get('user').userId || null,
+            colecao: 'produtos'
+        });
         return await this.schemaModel.findById(id);
     }
     async findByCategory(category) {
@@ -119,6 +129,8 @@ ProductsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('produtos')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        event_emitter_1.EventEmitter2,
+        cls_service_1.ClsService,
         products_import_1.ProductsImport])
 ], ProductsService);
 exports.ProductsService = ProductsService;
