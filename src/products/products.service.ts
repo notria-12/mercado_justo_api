@@ -3,9 +3,9 @@ import { CreateProductDto, UpdateProductDto } from './dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ProductDocument } from 'src/schema';
-import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto } from 'src/common';
+import { PaginationDto, FindAllSearchDto, findAllWithPaginationSearch, BulkRemoveDto, generatePagination } from 'src/common';
 import { ProductsImport } from './products.import';
-import { GetProductsDto } from './dto/get-products.dto';
+
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ClsService } from 'nestjs-cls/dist/src/lib/cls.service';
 import { UserPayload } from 'src/auth/entities/user-payload.entity';
@@ -72,9 +72,11 @@ export class ProductsService {
     );
     return await this.schemaModel.findById(id);
   }
-  async findByCategory(category: string){
-    
-    return await this.schemaModel.find({$or: [{categoria_1: category}, {categoria_2: category}]})
+  async findByCategory(category: string, pagination: PaginationDto){
+    const { limit, sort, skip } = generatePagination(pagination);
+    return await this.schemaModel.find({$or: [{categoria_1: category}, {categoria_2: category}]}).skip(skip)
+    .limit(limit)
+    .sort(sort);
   }
 
   async getList() {

@@ -23,7 +23,7 @@ export declare class ProductsService {
     findOne(id: string): Promise<import("src/schema").Product & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     }>;
-    findByCategory(category: string): Promise<(import("src/schema").Product & import("mongoose").Document<any, any, any> & {
+    findByCategory(category: string, pagination: PaginationDto): Promise<(import("src/schema").Product & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     getList(): Promise<any[]>;

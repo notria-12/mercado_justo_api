@@ -68,8 +68,11 @@ let ProductsService = class ProductsService {
         });
         return await this.schemaModel.findById(id);
     }
-    async findByCategory(category) {
-        return await this.schemaModel.find({ $or: [{ categoria_1: category }, { categoria_2: category }] });
+    async findByCategory(category, pagination) {
+        const { limit, sort, skip } = (0, common_2.generatePagination)(pagination);
+        return await this.schemaModel.find({ $or: [{ categoria_1: category }, { categoria_2: category }] }).skip(skip)
+            .limit(limit)
+            .sort(sort);
     }
     async getList() {
         return await this.schemaModel.aggregate([

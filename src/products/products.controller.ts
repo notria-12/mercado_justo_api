@@ -49,8 +49,8 @@ export class ProductsController {
   @Roles(Role.Operador, Role.Gerente, Role.Cliente)
   @Permissions(Permission.Produtos, Permission.Precos)
   @Get('/category/:id')
-  findByCategory(@Param('id') id: string) {
-    return this.productModelsService.findByCategory(id);
+  findByCategory(@Param('id') id: string, @Query()  pagination: PaginationDto) {
+    return this.productModelsService.findByCategory(id, pagination);
   }
 
   @ApiOkResponse(ApiResSchema.apply(Product))

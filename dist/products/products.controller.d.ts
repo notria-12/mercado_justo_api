@@ -18,7 +18,7 @@ export declare class ProductsController {
     findOne(id: string): Promise<Product & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     }>;
-    findByCategory(id: string): Promise<(Product & import("mongoose").Document<any, any, any> & {
+    findByCategory(id: string, pagination: PaginationDto): Promise<(Product & import("mongoose").Document<any, any, any> & {
         _id: import("mongoose").Types.ObjectId;
     })[]>;
     update(id: string, updateProductDto: UpdateProductDto): Promise<Product & import("mongoose").Document<any, any, any> & {

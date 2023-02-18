@@ -39,8 +39,8 @@ let ProductsController = class ProductsController {
     findOne(id) {
         return this.productModelsService.findOne(id);
     }
-    findByCategory(id) {
-        return this.productModelsService.findByCategory(id);
+    findByCategory(id, pagination) {
+        return this.productModelsService.findByCategory(id, pagination);
     }
     update(id, updateProductDto) {
         return this.productModelsService.update(id, updateProductDto);
@@ -100,8 +100,9 @@ __decorate([
     (0, common_1.Get)('/category/:id'),
     openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, common_2.PaginationDto]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "findByCategory", null);
 __decorate([
