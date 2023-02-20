@@ -74,6 +74,7 @@ let AuthService = class AuthService {
                 cpf: user.cpf,
                 status_assinante: user.status_assinante,
                 ultimo_acesso: user.ultimo_acesso,
+                data_cadastro: user.data_cadastro,
                 tipo_conta: user.tipo_conta,
                 permissoes: user.permissoes,
                 responsavel_mercados: user.responsavel_mercados

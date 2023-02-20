@@ -19,6 +19,7 @@ export declare class AuthController {
             cpf: string;
             status_assinante: boolean;
             ultimo_acesso: Date;
+            data_cadastro: Date;
             tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
@@ -35,6 +36,7 @@ export declare class AuthController {
             cpf: string;
             status_assinante: boolean;
             ultimo_acesso: Date;
+            data_cadastro: Date;
             tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
@@ -51,6 +53,7 @@ export declare class AuthController {
             cpf: string;
             status_assinante: boolean;
             ultimo_acesso: Date;
+            data_cadastro: Date;
             tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
@@ -73,6 +76,7 @@ export declare class AuthController {
             cpf: string;
             status_assinante: boolean;
             ultimo_acesso: Date;
+            data_cadastro: Date;
             tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
