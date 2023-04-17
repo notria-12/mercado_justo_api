@@ -11,7 +11,7 @@ import { CreateCardDto } from "./dtos/create-card.dto";
 import { UserDocument } from "src/schema";
 import { preapproval } from "mercadopago";
 import { sign } from "crypto";
-
+import CircularJSON from 'circular-json';
 @Injectable()
 export class PaymentsService{
     constructor(@InjectModel('assinaturas') private signatureModel: Model<SignatureDocument>,  @InjectModel('usuarios')
@@ -211,28 +211,25 @@ export class PaymentsService{
                 
                 if(card['status'] == 'active'){
                     const plan = {
-                        card_token_id: card['id'],
-                        status: 'authorized',
-                        payer_email: createSignature.email,
-                        back_url: 'https://mercadojusto.com.br',
-                        reason: 'Assinatura APP MJ',
-                        auto_recurring: {
-                            frequency: 7,
-                            frequency_type: 'days',
-                            transaction_amount: 1,
-                            currency_id: 'BRL',
-                           
-                        }, 
-                        external_reference: createSignature.id_usuario
+                        "preapproval_plan_id": "2c93808485edcbce0185efef61d201f8",
+                        'card_token_id': card['id'],
+                        'status': 'authorized',
+                        'payer_email': createSignature.email,
+                        'back_url': 'https://mercadojusto.com.br',
+                        'reason': 'Assinatura APP MJ',
+                        'external_reference': createSignature.id_usuario
                     };
-                    
+                  console.log("BEFORE") 
+                
                   var responsePlan = await  mercadopago.preapproval.create(plan);
-                  if(!(responsePlan['status'] >= 200 && responsePlan['status'] <= 299)){
+                  console.log("RESPONSE::::", responsePlan.data)
+                  if(!(responsePlan.data['status'] >= 200 && responsePlan.data['status'] <= 299)){
                     throw new UnauthorizedException();
                   }
 
                   return responsePlan['response'];
                 }else{
+
                     return new UnauthorizedException(card);
                 }
                 
@@ -241,7 +238,7 @@ export class PaymentsService{
             }
             
         }catch(e){
-           
+           console.log(e)
            throw new UnauthorizedException(e);
         }
     }
