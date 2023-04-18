@@ -1,1 +1,0 @@
-export declare function ApiController(apiTag: string, apiExtraModels: Function[], apiBearerAuth?: boolean): <TFunction extends Function, Y>(target: object | TFunction, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<Y>) => void;
