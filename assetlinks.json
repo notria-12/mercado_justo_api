@@ -1,0 +1,10 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.mercadojusto",
+      "sha256_cert_fingerprints":
+      ["1F:18:C8:C8:72:1E:AD:DD:F6:D6:03:7C:74:BD:9D:7B:7B:B1:20:C2:D0:D0:A3:48:1B:6C:FE:08:A7:68:9F:D4"]
+    }
+  }]
+  
