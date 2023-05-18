@@ -6,12 +6,12 @@ import { SignatureDocument, tipo } from "src/schema/signature.schema";
 import { CreatePixDto } from "./dtos/create-pix.dto";
 import { CreatePreferenceDto } from "./dtos/create-preference.dto";
 import { CreateSignatureDto } from "./dtos/create-signature.dto";
-import * as MP from 'mercadopago';
+
 import { CreateCardDto } from "./dtos/create-card.dto";
 import { UserDocument } from "src/schema";
-import { preapproval } from "mercadopago";
+
 import { sign } from "crypto";
-import CircularJSON from 'circular-json';
+
 @Injectable()
 export class PaymentsService{
     constructor(@InjectModel('assinaturas') private signatureModel: Model<SignatureDocument>,  @InjectModel('usuarios')
