@@ -20,8 +20,8 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
-            permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
+            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            permissoes: ("imagens" | "precos" | "usuarios" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
     }>;
@@ -37,8 +37,8 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
-            permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
+            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            permissoes: ("imagens" | "precos" | "usuarios" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
     }>;
@@ -54,8 +54,8 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
-            permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
+            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            permissoes: ("imagens" | "precos" | "usuarios" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
     }>;
@@ -77,8 +77,8 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
-            permissoes: ("usuarios" | "imagens" | "precos" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
+            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            permissoes: ("imagens" | "precos" | "usuarios" | "produtos" | "mercados" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
     }>;

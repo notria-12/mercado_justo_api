@@ -134,7 +134,7 @@ __decorate([
 exports.CreateUserDto = CreateUserDto;
 class CreateUserAppDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { nome: { required: true, type: () => String }, cpf: { required: true, type: () => String }, email: { required: true, type: () => String }, telefone: { required: true, type: () => String }, orientacao: { required: true, type: () => Object, enum: schema_1.orientacao }, idade: { required: true, type: () => Number, minimum: 18 }, tipo_conta: { required: true, type: () => Object, enum: schema_1.tipoConta }, permissoes: { required: true, type: () => [Object], enum: schema_1.permissoes }, google_id: { required: false, type: () => String }, endereco: { required: false, type: () => require("./create-user.dto").AddressDto } };
+        return { nome: { required: true, type: () => String }, cpf: { required: true, type: () => String }, email: { required: true, type: () => String }, telefone: { required: true, type: () => String }, orientacao: { required: true, type: () => Object, enum: schema_1.orientacao }, idade: { required: true, type: () => Number, minimum: 18 }, tipo_conta: { required: true, type: () => Object, enum: schema_1.tipoConta }, permissoes: { required: true, type: () => [Object], enum: schema_1.permissoes }, google_id: { required: false, type: () => String }, endereco: { required: false, type: () => require("./create-user.dto").AddressDto }, invitedBy: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -194,5 +194,10 @@ __decorate([
     (0, class_transformer_1.Type)(() => AddressDto),
     __metadata("design:type", AddressDto)
 ], CreateUserAppDto.prototype, "endereco", void 0);
+__decorate([
+    (0, common_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateUserAppDto.prototype, "invitedBy", void 0);
 exports.CreateUserAppDto = CreateUserAppDto;
 //# sourceMappingURL=create-user.dto.js.map

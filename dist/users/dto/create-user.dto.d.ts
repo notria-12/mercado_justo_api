@@ -33,4 +33,5 @@ export declare class CreateUserAppDto {
     permissoes: Permissoes[];
     google_id?: string;
     endereco?: AddressDto;
+    invitedBy: string;
 }

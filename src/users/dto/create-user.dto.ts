@@ -128,4 +128,7 @@ export class CreateUserAppDto {
   @ValidateNested()
   @Type(() => AddressDto)
   endereco?: AddressDto;
+  @IsString()
+  @IsOptional()
+  invitedBy: string;
 }

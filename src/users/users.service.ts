@@ -41,9 +41,21 @@ export class UsersService {
       permissoes:[ "precos", "produtos", "mercados", "usuarios"],
       tipo_conta: 'cliente',
     });
+
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
     const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*7), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: tipo[2]});
     createSignature.save();
+    
+    if(createUserDto.invitedBy != undefined){
+     let signatureSender = await this.signatureModel.findOne({id_usuario: createUserDto.invitedBy});
+     if(signatureSender['tipo_pagamento'] != 'card' || !signatureSender['status']){
+        if(!signatureSender['status']){
+          await this.signatureModel.updateOne({id_usuario: createUserDto.invitedBy}, {status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*1),tipo_pagamento: 'free'});
+        }else{
+          await this.signatureModel.updateOne({id_usuario: createUserDto.invitedBy}, {data_expiracao: new Date(signatureSender['data_expiracao']).getTime() + (1000 * 60 * 60 * 24*1), tipo_pagamento: 'free'})
+        }
+     }
+    }
     return user;
   }
 
