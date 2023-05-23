@@ -58,7 +58,7 @@ let UsersService = class UsersService {
         }
         const newUser = new this.schemaModel(Object.assign(Object.assign({}, createUserDto), { permissoes: ["precos", "produtos", "mercados", "usuarios"], tipo_conta: 'cliente' }));
         const _a = (await (await newUser.save()).populate('mercado')).toObject(), { senha } = _a, user = __rest(_a, ["senha"]);
-        const createSignature = new this.signatureModel({ id_pagamento: '', status: true, data_expiracao: Date.now() + (1000 * 60 * 60 * 24 * 7), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: signature_schema_1.tipo[2] });
+        const createSignature = new this.signatureModel({ id_pagamento: '', status: true, data_expiracao: Date.now() + (1000 * 60 * 60 * 24 * 30), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: signature_schema_1.tipo[2] });
         createSignature.save();
         if (createUserDto.invitedBy != undefined) {
             let signatureSender = await this.signatureModel.findOne({ id_usuario: createUserDto.invitedBy });

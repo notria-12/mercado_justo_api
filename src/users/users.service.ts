@@ -43,7 +43,7 @@ export class UsersService {
     });
 
     const { senha, ...user } = (await (await newUser.save()).populate('mercado')).toObject();
-    const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*7), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: tipo[2]});
+    const createSignature = new this.signatureModel({id_pagamento: '', status: true, data_expiracao:  Date.now() + (1000 * 60 * 60 * 24*30), ultima_assinatura: Date.now(), id_usuario: user._id, tipo_pagamento: tipo[2]});
     createSignature.save();
     
     if(createUserDto.invitedBy != undefined){
