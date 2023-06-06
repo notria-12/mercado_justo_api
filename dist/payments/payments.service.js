@@ -199,7 +199,12 @@ let PaymentsService = class PaymentsService {
                 console.log('Card status: ', card);
                 if (card['status'] == 'active') {
                     const plan = {
-                        "preapproval_plan_id": "2c93808485edcbce0185efef61d201f8",
+                        "auto_recurring": {
+                            "frequency": 1,
+                            "frequency_type": "months",
+                            "currency_id": "BRL",
+                            "transaction_amount": 1
+                        },
                         'card_token_id': card['id'],
                         'status': 'authorized',
                         'payer_email': createSignature.email,
