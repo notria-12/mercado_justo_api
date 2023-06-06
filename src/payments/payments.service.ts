@@ -201,7 +201,8 @@ export class PaymentsService{
     async createSignature(createSignature: CreateSignatureDto){
         try{
             var mercadopago = require('mercadopago');
-            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
+            mercadopago.configure({access_token: process.env.MERCADO_PAGO_TOKEN, client_id: process.env.CLIENT_ID, client_secret: process.env.CLIENT_SECRET })
+            // mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
             const user = await this.userModel.findById(createSignature.id_usuario)
 
             if(user){
@@ -245,7 +246,7 @@ export class PaymentsService{
 
    async saveCard(createCard: CreateCardDto){
         var mercadopago = require('mercadopago');
-        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  
+        mercadopago.configure({access_token: process.env.MERCADO_PAGO_TOKEN, client_id: process.env.CLIENT_ID, client_secret: process.env.CLIENT_SECRET })
         const user = await this.userModel.findById(createCard.user_id)
         
         if(user){

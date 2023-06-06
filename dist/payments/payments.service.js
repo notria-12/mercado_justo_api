@@ -192,7 +192,7 @@ let PaymentsService = class PaymentsService {
     async createSignature(createSignature) {
         try {
             var mercadopago = require('mercadopago');
-            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+            mercadopago.configure({ access_token: process.env.MERCADO_PAGO_TOKEN, client_id: process.env.CLIENT_ID, client_secret: process.env.CLIENT_SECRET });
             const user = await this.userModel.findById(createSignature.id_usuario);
             if (user) {
                 var card = await this.saveCard(createSignature.card);
@@ -230,7 +230,7 @@ let PaymentsService = class PaymentsService {
     }
     async saveCard(createCard) {
         var mercadopago = require('mercadopago');
-        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+        mercadopago.configure({ access_token: process.env.MERCADO_PAGO_TOKEN, client_id: process.env.CLIENT_ID, client_secret: process.env.CLIENT_SECRET });
         const user = await this.userModel.findById(createCard.user_id);
         if (user) {
             try {
