@@ -47,7 +47,7 @@ let PaymentsController = class PaymentsController {
         return this.paymentsService.notificaPamento(data);
     }
     buscaPlano(id) {
-        return this.paymentsService.buscaAssinaturaMP(id);
+        return this.paymentsService.buscaAssinaturaCIELO(id);
     }
     criaCartao(createCard) {
         return this.paymentsService.saveCard(createCard);

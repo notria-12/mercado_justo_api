@@ -11,6 +11,7 @@ import { CreateCardDto } from "./dtos/create-card.dto";
 import { UserDocument } from "src/schema";
 
 import { sign } from "crypto";
+import { url } from "inspector";
 
 @Injectable()
 export class PaymentsService{
@@ -23,7 +24,7 @@ export class PaymentsService{
             console.log(data)
            if(data['entity'] == 'preapproval'){
             let signatureId : string =  data['data']['id'];
-            let signatureMP = await this.buscaAssinaturaMP(signatureId);
+            let signatureMP = await this.buscaAssinaturaCIELO(signatureId);
                 if(data['action'] == 'updated'){
                    
                     const signature = await this.signatureModel.findOne({id_assinatura: signatureId})
@@ -108,14 +109,16 @@ export class PaymentsService{
           }
     }
 
-    async buscaAssinaturaMP(id: string){
+    async buscaAssinaturaCIELO(id: string){
        try{
-        var mercadopago = require('mercadopago');
-        mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+       let responseSignature =  await axios.get('https://apiquerysandbox.cieloecommerce.cielo.com.br/1/RecurrentPayment/'+id,{ headers: {
+                    'MerchantId': process.env.MERCHANT_ID,
+                    'MerchantKey': process.env.MERCHANT_KEY
+                  }},);
         
-        var responsePlan = await  mercadopago.preapproval.findById(id);
-        console.log(responsePlan['response'])
-        return responsePlan;
+       
+        console.log(responseSignature.data)
+        return responseSignature.data;
        }catch(e){
         console.log(e)
         return e;
@@ -200,45 +203,77 @@ export class PaymentsService{
 
     async createSignature(createSignature: CreateSignatureDto){
         try{
-            var mercadopago = require('mercadopago');
-            mercadopago.configure({access_token: process.env.MERCADO_PAGO_TOKEN, client_id: process.env.CLIENT_ID, client_secret: process.env.CLIENT_SECRET })
-            // mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);   
+           
             const user = await this.userModel.findById(createSignature.id_usuario)
 
             if(user){
-
-                var card = await this.saveCard(createSignature.card);
-                console.log('Card status: ', card);
+                let firstNumbers = createSignature.card.card_number.slice(0, 6);
                 
-                if(card['status'] == 'active'){
-                    const plan = {
-                        "auto_recurring": {
-                            "frequency": 1,
-                            "frequency_type": "months",
+                   let responseBin = await axios.get('https://apiquerysandbox.cieloecommerce.cielo.com.br/1/cardBin/'+firstNumbers,{ headers: {
+                    'MerchantId': process.env.MERCHANT_ID,
+                    'MerchantKey': process.env.MERCHANT_KEY
+                  }},)
+                   
+                   let brand = responseBin.data['Provider'];
+                    const signature = {
+                        "MerchantOrderId": "02131",
+                        "Customer": {
+                          "Name": user.nome,
+                          "Email": user.email,
+                          "Identity": user.cpf,
+                          "IdentityType": "CPF",
+                        },
+                        "Payment": {
+                          "Installments": 1,
+                          "RecurrentPayment": {
+                            "AuthorizeNow": true,
+                            "Interval":"Monthly"
                             
-                            "currency_id": "BRL",
-                            "transaction_amount": 1
-                            },
-                        'card_token_id': card['id'],
-                        'status': 'authorized',
-                        'payer_email': createSignature.email,
-                        'back_url': 'https://mercadojusto.com.br',
-                        'reason': 'Assinatura APP MJ',
-                        'external_reference': createSignature.id_usuario
-                    };
-                  console.log("BEFORE") 
+                          },
+                          "CreditCard": {
+                            "CardNumber": createSignature.card.card_number,
+                            "Holder": createSignature.card.holder_name,
+                            "ExpirationDate": createSignature.card.expiration_month+'/'+createSignature.card.expiration_year,
+                            "SecurityCode": createSignature.card.security_code,
+                            "SaveCard": true,
+                            "Brand": brand == "MASTERCARD" ? "MASTER" : brand
+                          },
+                          "SoftDescriptor": "Mercado Justo",
+                          "Type": "CreditCard",
+                          "Amount": 5,
+                          "Currency": "BRL",
+                          "Country": "BRA"
+                        }
+                       };
+                  
                 
-                  var responsePlan = await  mercadopago.preapproval.create(plan);
+                  var responsePlan = await axios.post('https://apisandbox.cieloecommerce.cielo.com.br/1/sales', signature, {
+                    headers: {
+                      'MerchantId': process.env.MERCHANT_ID,
+                      'MerchantKey': process.env.MERCHANT_KEY
+                    }
+                  } )
                   console.log("RESPONSE::::", responsePlan.data)
-                  if(!(responsePlan.data['status'] >= 200 && responsePlan.data['status'] <= 299)){
+                  if(!(responsePlan.status >= 200 && responsePlan.status <= 299)){
                     throw new UnauthorizedException();
                   }
 
-                  return responsePlan['response'];
-                }else{
+                  if(responsePlan.data['Payment']['RecurrentPayment']['ReasonCode'] == 0){
+                    let signature = (await this.signatureModel.findOne( {id_usuario:  createSignature.id_usuario}));
+                    if(signature){
 
-                    return new UnauthorizedException(card);
-                }
+                        await this.signatureModel.updateOne({id_usuario: createSignature.id_usuario}, {status:  true, data_expiracao:new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura:  Date.now(), id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId']});
+                    }else{
+                        const signature = new this.signatureModel({ status: true, data_expiracao:  new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId']});
+                        signature.save();
+                    }
+                    return responsePlan.data;
+                  }else{
+                    throw new UnauthorizedException({mensagem: "Problemas com o Cartão", codigo: "invalid_card"})
+                  }
+
+                 
+               
                 
             }else{
                 throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
@@ -272,16 +307,22 @@ export class PaymentsService{
                 }
             }
       
-            var result = await mercadopago.card_token.save(cardInfo);
-            var token = result['response']['id'];
+            // var result = await mercadopago.card_token.save(cardInfo);
+            var result = await axios.post('https://api.mercadopago.com/v1/card_tokens?public_key=APP_USR-4017638a-dedd-4113-b8b0-5d5e32788862', cardInfo,  {
+                headers: {
+                  'Authorization': `Bearer ${process.env.MERCADO_PAGO_TOKEN}`
+                }
+              });
+              console.log(result)
+            var token = result.data['id'];
             if(signature){
                 await this.signatureModel.updateOne({id_usuario: createCard.user_id}, {card_token:  token, tipo_pagamento: tipo[0]});
             }else{
                 const createSignature = new this.signatureModel({id_pagamento: '', status: false, data_expiracao:  null, ultima_assinatura: null, id_usuario: createCard.user_id, card_token: token, tipo_pagamento: tipo[0]});
                 createSignature.save();
             }
-
-            return result['response'];
+         
+            return result.data;
 
             } catch (e) {
                 return e;

@@ -14,7 +14,7 @@ const openapi = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class CreateCardDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { card_number: { required: true, type: () => String }, user_id: { required: true, type: () => String }, expiration_month: { required: true, type: () => String }, expiration_year: { required: true, type: () => String }, security_code: { required: true, type: () => String }, holder_name: { required: true, type: () => String }, cpf: { required: true, type: () => String } };
+        return { card_number: { required: true, type: () => String }, user_id: { required: true, type: () => String }, expiration_month: { required: true, type: () => String }, expiration_year: { required: true, type: () => String }, security_code: { required: true, type: () => String }, holder_name: { required: true, type: () => String }, cpf: { required: true, type: () => String }, brand: { required: true, type: () => String } };
     }
 }
 __decorate([
@@ -52,5 +52,9 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateCardDto.prototype, "cpf", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateCardDto.prototype, "brand", void 0);
 exports.CreateCardDto = CreateCardDto;
 //# sourceMappingURL=create-card.dto.js.map

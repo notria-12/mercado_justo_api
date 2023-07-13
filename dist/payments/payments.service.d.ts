@@ -11,7 +11,7 @@ export declare class PaymentsService {
     constructor(signatureModel: Model<SignatureDocument>, userModel: Model<UserDocument>);
     notificaPamento(data: any): Promise<any>;
     capturePayment(id: string): Promise<any>;
-    buscaAssinaturaMP(id: string): Promise<any>;
+    buscaAssinaturaCIELO(id: string): Promise<any>;
     cancelSingnature(id: string): Promise<any>;
     updateSignature(createCard: CreateCardDto): Promise<any>;
     deleteCard(id: string): Promise<any>;

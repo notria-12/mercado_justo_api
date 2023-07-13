@@ -48,7 +48,7 @@ export class PaymentsController{
 
     @Get('plano/:id')
     buscaPlano(@Param('id') id: string){
-      return this.paymentsService.buscaAssinaturaMP(id);
+      return this.paymentsService.buscaAssinaturaCIELO(id);
     }
 
     @Post('card/')

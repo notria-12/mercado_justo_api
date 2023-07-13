@@ -22,6 +22,8 @@ export class CreateCardDto{
     @IsString()
     @IsNotEmpty()
     cpf: string
+    @IsString()
+    brand: string
 
 }
 

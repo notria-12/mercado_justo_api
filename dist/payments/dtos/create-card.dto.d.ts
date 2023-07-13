@@ -6,4 +6,5 @@ export declare class CreateCardDto {
     security_code: string;
     holder_name: string;
     cpf: string;
+    brand: string;
 }
