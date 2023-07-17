@@ -40,8 +40,8 @@ exports.default = () => ({
     mailer: {
         transport: {
             host: process.env.MAIL_HOST,
-            secure: true,
-            port: 465,
+            secure: false,
+            port: 587,
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASSWORD,
