@@ -58,15 +58,13 @@ export class MailService {
       });
 
       if (tokenString) {
-        // const url = `https://mercadojustoapp.com.br/recuperar-senha?email=${user.email}&token=${tokenString}`
+       
         this.mailerService.sendMail({
           to: user.email,
-          // from: '"Support Team" <support@example.com>', // override default from
           subject: 'Código de login - Mercado Justo',
           template: 'login-token',
           context: {
             name: user.nome,
-            
             token: tokenString
           },
         });
