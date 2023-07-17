@@ -16,6 +16,8 @@ declare const _default: () => {
         transport: {
             host: string;
             secure: boolean;
+            logger: boolean;
+            debug: boolean;
             port: number;
             auth: {
                 user: string;
