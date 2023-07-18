@@ -53,13 +53,13 @@ let PaymentsController = class PaymentsController {
         return this.paymentsService.saveCard(createCard);
     }
     buscaCartao(id) {
-        return this.paymentsService.getCardInfo(id);
+        return this.paymentsService.getPaymentInfo(id);
     }
     deletaCartao(id) {
         return this.paymentsService.deleteCard(id);
     }
     buscaFatura(id) {
-        return this.paymentsService.capturePayment(id);
+        return this.paymentsService.buscaAssinaturaCIELO(id);
     }
     buscaPreferencia(createPreference) {
         return this.paymentsService.buscaPreferencia(createPreference);

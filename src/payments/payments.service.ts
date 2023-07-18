@@ -335,6 +335,34 @@ export class PaymentsService{
         
     }
 
+    async getPaymentInfo(user_id: string) {
+        
+        const user = await this.userModel.findById(user_id)
+        
+        if(user){
+            const signature = await this.signatureModel.findOne({id_usuario: user_id})
+           if(signature){
+             if(signature['id_pagamento']){
+                let responsePayment =  await axios.get('https://apiquerysandbox.cieloecommerce.cielo.com.br//1/sales/'+signature['id_pagamento'],{ headers: {
+                    'MerchantId': process.env.MERCHANT_ID,
+                    'MerchantKey': process.env.MERCHANT_KEY
+                  }},);
+
+                return responsePayment.data;
+             }else{
+                throw new NotFoundException({mensagem: "Cartão não encontrado", codigo: "not_found_card"});
+             }
+           }else{
+            throw new NotFoundException({mensagem: "Usuário não tem assinatura vigente", codigo: "not_found_signature"});
+           }            
+
+        }else{
+          
+            throw new NotFoundException({mensagem: "Usuário não encontrado", codigo: "not_found_user"});
+             
+        }
+    }
+
     async getCardInfo(user_id: string) {
         var mercadopago = require('mercadopago');
         mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);  

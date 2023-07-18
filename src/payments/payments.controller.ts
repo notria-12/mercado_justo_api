@@ -59,7 +59,7 @@ export class PaymentsController{
 
     @Get('card/:id')
     buscaCartao(@Param('id') id: string){
-      return this.paymentsService.getCardInfo(id);
+      return this.paymentsService.getPaymentInfo(id);
     }
     @Delete('card/:id')
     deletaCartao(@Param('id') id: string){
@@ -68,7 +68,7 @@ export class PaymentsController{
 
     @Get('fatura/:id')
     buscaFatura(@Param('id') id: string){
-      return this.paymentsService.capturePayment(id);
+      return this.paymentsService.buscaAssinaturaCIELO(id);
     }
 
     @Post('preferencias/')
