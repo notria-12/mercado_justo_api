@@ -111,7 +111,7 @@ let PaymentsService = class PaymentsService {
     }
     async buscaAssinaturaCIELO(id) {
         try {
-            let responseSignature = await axios_1.default.get('https://apiquerysandbox.cieloecommerce.cielo.com.br/1/RecurrentPayment/' + id, { headers: {
+            let responseSignature = await axios_1.default.get(process.env.BASE_URL_QUERY + '/1/RecurrentPayment/' + id, { headers: {
                     'MerchantId': process.env.MERCHANT_ID,
                     'MerchantKey': process.env.MERCHANT_KEY
                 } });
@@ -125,13 +125,13 @@ let PaymentsService = class PaymentsService {
     }
     async cancelSingnature(id) {
         try {
-            var mercadopago = require('mercadopago');
-            mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
-            var cancelResponse = await mercadopago.preapproval.cancel(id);
-            if (cancelResponse['response']['status'] == "cancelled") {
+            var response = await axios_1.default.put(process.env.BASE_URL_TRANSACTION + '/1/RecurrentPayment/' + id + '/Deactivate', {}, { headers: {
+                    'MerchantId': process.env.MERCHANT_ID,
+                    'MerchantKey': process.env.MERCHANT_KEY
+                }, });
+            if (response.status == 200) {
                 await this.signatureModel.updateOne({ id_assinatura: id }, { pagamento_pendente: false, card_token: '', tipo_pagamento: signature_schema_1.tipo[2] });
             }
-            return cancelResponse;
         }
         catch (error) {
             return error;
@@ -195,7 +195,7 @@ let PaymentsService = class PaymentsService {
             const user = await this.userModel.findById(createSignature.id_usuario);
             if (user) {
                 let firstNumbers = createSignature.card.card_number.slice(0, 6);
-                let responseBin = await axios_1.default.get('https://apiquerysandbox.cieloecommerce.cielo.com.br/1/cardBin/' + firstNumbers, { headers: {
+                let responseBin = await axios_1.default.get(process.env.BASE_URL_QUERY + '/1/cardBin/' + firstNumbers, { headers: {
                         'MerchantId': process.env.MERCHANT_ID,
                         'MerchantKey': process.env.MERCHANT_KEY
                     } });
@@ -229,7 +229,7 @@ let PaymentsService = class PaymentsService {
                         "Country": "BRA"
                     }
                 };
-                var responsePlan = await axios_1.default.post('https://apisandbox.cieloecommerce.cielo.com.br/1/sales', signature, {
+                var responsePlan = await axios_1.default.post(process.env.BASE_URL_TRANSACTION + '/1/sales', signature, {
                     headers: {
                         'MerchantId': process.env.MERCHANT_ID,
                         'MerchantKey': process.env.MERCHANT_KEY
@@ -313,7 +313,7 @@ let PaymentsService = class PaymentsService {
             const signature = await this.signatureModel.findOne({ id_usuario: user_id });
             if (signature) {
                 if (signature['id_pagamento']) {
-                    let responsePayment = await axios_1.default.get('https://apiquerysandbox.cieloecommerce.cielo.com.br//1/sales/' + signature['id_pagamento'], { headers: {
+                    let responsePayment = await axios_1.default.get(process.env.BASE_URL_QUERY + '/1/sales/' + signature['id_pagamento'], { headers: {
                             'MerchantId': process.env.MERCHANT_ID,
                             'MerchantKey': process.env.MERCHANT_KEY
                         } });
