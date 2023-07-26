@@ -240,7 +240,7 @@ let PaymentsService = class PaymentsService {
                         "Country": "BRA"
                     }
                 };
-                var responsePlan = await axios_1.default.post(process.env.BASE_URL_TRANSACTION + '/1/sales', signatureBody, {
+                var responsePlan = await axios_1.default.post(process.env.BASE_URL_TRANSACTION + '/1/sales', JSON.stringify(signatureBody), {
                     headers: {
                         'MerchantId': process.env.MERCHANT_ID,
                         'MerchantKey': process.env.MERCHANT_KEY

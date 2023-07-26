@@ -271,7 +271,7 @@ export class PaymentsService{
                        };
                   
                 
-                  var responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', signatureBody, {
+                  var responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', JSON.stringify(signatureBody), {
                     headers: {
                       'MerchantId': process.env.MERCHANT_ID,
                       'MerchantKey': process.env.MERCHANT_KEY
