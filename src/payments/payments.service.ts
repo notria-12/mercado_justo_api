@@ -207,7 +207,7 @@ export class PaymentsService{
 
     async createSignature(createSignature: CreateSignatureDto){
         try{
-           
+           console.log('SIGNATUREDTO::', createSignature)
             const user = await this.userModel.findById(createSignature.id_usuario)
 
             if(user){
@@ -219,6 +219,7 @@ export class PaymentsService{
                   }},)
                    
                    let brand = responseBin.data['Provider'];
+                   console.log("BRAND::", brand)
                     const signature = {
                         "MerchantOrderId": "02131",
                         "Customer": {

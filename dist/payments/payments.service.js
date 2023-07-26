@@ -192,6 +192,7 @@ let PaymentsService = class PaymentsService {
     }
     async createSignature(createSignature) {
         try {
+            console.log('SIGNATUREDTO::', createSignature);
             const user = await this.userModel.findById(createSignature.id_usuario);
             if (user) {
                 let firstNumbers = createSignature.card.card_number.slice(0, 6);
@@ -200,6 +201,7 @@ let PaymentsService = class PaymentsService {
                         'MerchantKey': process.env.MERCHANT_KEY
                     } });
                 let brand = responseBin.data['Provider'];
+                console.log("BRAND::", brand);
                 const signature = {
                     "MerchantOrderId": "02131",
                     "Customer": {
