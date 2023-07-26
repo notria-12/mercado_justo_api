@@ -190,17 +190,26 @@ let PaymentsService = class PaymentsService {
             return e;
         }
     }
+    getCardBrand(cardNumber) {
+        const cardBrands = {
+            VISA: /^4\d{3}/,
+            Master: /^5[1-5]\d{2}/,
+            Elo: /^(401178|401179|438935|457631|457632|431274|451416|457393|504175|627780|636297|636368|650488|650490|650576|650690|650720|650747|650901|650902|650903|650904|650905|651653|655000|655001|651653|651652|506699|506770|506771|506772|506773|506774|506775|506776|506777|506778|506779|506780|506781|506782|506783|506784|506785|506786|506787|506788|506789|506790|506791|506792|506793|506794|506795|506796|506797|506798|506799)\d{10}/,
+            'American Express': /^3[47]\d{2}/,
+        };
+        for (const brand in cardBrands) {
+            if (cardBrands[brand].test(cardNumber)) {
+                return brand;
+            }
+        }
+        return 'Bandeira desconhecida';
+    }
     async createSignature(createSignature) {
         try {
             console.log('SIGNATUREDTO::', createSignature);
             const user = await this.userModel.findById(createSignature.id_usuario);
             if (user) {
-                let firstNumbers = createSignature.card.card_number.slice(0, 6);
-                let responseBin = await axios_1.default.get(process.env.BASE_URL_QUERY + '/1/cardBin/' + firstNumbers, { headers: {
-                        'MerchantId': process.env.MERCHANT_ID,
-                        'MerchantKey': process.env.MERCHANT_KEY
-                    } });
-                let brand = responseBin.data['Provider'];
+                const brand = this.getCardBrand(createSignature.card.card_number);
                 console.log("BRAND::", brand);
                 const signature = {
                     "MerchantOrderId": "02131",
@@ -222,7 +231,7 @@ let PaymentsService = class PaymentsService {
                             "ExpirationDate": createSignature.card.expiration_month + '/' + createSignature.card.expiration_year,
                             "SecurityCode": createSignature.card.security_code,
                             "SaveCard": true,
-                            "Brand": brand == "MASTERCARD" ? "MASTER" : brand
+                            "Brand": brand
                         },
                         "SoftDescriptor": "Mercado Justo",
                         "Type": "CreditCard",
