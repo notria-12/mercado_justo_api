@@ -192,7 +192,7 @@ let PaymentsService = class PaymentsService {
     }
     getCardBrand(cardNumber) {
         const cardBrands = {
-            VISA: /^4\d{3}/,
+            Visa: /^4\d{3}/,
             Master: /^5[1-5]\d{2}/,
             Elo: /^(401178|401179|438935|457631|457632|431274|451416|457393|504175|627780|636297|636368|650488|650490|650576|650690|650720|650747|650901|650902|650903|650904|650905|651653|655000|655001|651653|651652|506699|506770|506771|506772|506773|506774|506775|506776|506777|506778|506779|506780|506781|506782|506783|506784|506785|506786|506787|506788|506789|506790|506791|506792|506793|506794|506795|506796|506797|506798|506799)\d{10}/,
             'American Express': /^3[47]\d{2}/,
@@ -246,7 +246,7 @@ let PaymentsService = class PaymentsService {
                         'MerchantKey': process.env.MERCHANT_KEY
                     }
                 });
-                console.log("RESPONSE::::", responsePlan.data);
+                console.log("RESPONSE::::", responsePlan.data['Payment']);
                 if (!(responsePlan.status >= 200 && responsePlan.status <= 299)) {
                     throw new common_1.UnauthorizedException();
                 }
@@ -259,7 +259,7 @@ let PaymentsService = class PaymentsService {
                         const signature = new this.signatureModel({ status: true, data_expiracao: new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: signature_schema_1.tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'] });
                         signature.save();
                     }
-                    return responsePlan.data;
+                    return responsePlan.data['Payment'];
                 }
                 else {
                     throw new common_1.UnauthorizedException({ mensagem: "Problemas com o Cartão", codigo: "invalid_card" });
