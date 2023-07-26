@@ -239,7 +239,7 @@ export class PaymentsService{
                 const brand = this.getCardBrand(createSignature.card.card_number);
         
                    console.log("BRAND::", brand)
-                    const signature = {
+                    const signatureBody = {
                         "MerchantOrderId": "02131",
                         "Customer": {
                           "Name": user.nome,
@@ -271,7 +271,7 @@ export class PaymentsService{
                        };
                   
                 
-                  var responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', signature, {
+                  var responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', signatureBody, {
                     headers: {
                       'MerchantId': process.env.MERCHANT_ID,
                       'MerchantKey': process.env.MERCHANT_KEY
