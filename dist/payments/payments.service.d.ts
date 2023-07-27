@@ -16,7 +16,7 @@ export declare class PaymentsService {
     updateSignature(createCard: CreateCardDto): Promise<any>;
     deleteCard(id: string): Promise<any>;
     getCardBrand(cardNumber: string): string;
-    createSignature(createSignature: CreateSignatureDto): Promise<any>;
+    createSignature(createSignature: CreateSignatureDto): Promise<void>;
     saveCard(createCard: CreateCardDto): Promise<any>;
     getPaymentInfo(user_id: string): Promise<any>;
     getCardInfo(user_id: string): Promise<any>;

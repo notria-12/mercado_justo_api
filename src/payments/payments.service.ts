@@ -271,30 +271,30 @@ export class PaymentsService{
                        };
                   
                 
-                  var responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', JSON.stringify(signatureBody), {
+                  const responsePlan = await axios.post(process.env.BASE_URL_TRANSACTION+'/1/sales', signatureBody, {
                     headers: {
                       'MerchantId': process.env.MERCHANT_ID,
                       'MerchantKey': process.env.MERCHANT_KEY
                     }
                   } );
-                  console.log("RESPONSE::::", responsePlan.data['Payment'])
-                  if(!(responsePlan.status >= 200 && responsePlan.status <= 299)){
-                    throw new UnauthorizedException();
-                  }
+                //   console.log("RESPONSE::::", responsePlan.data['Payment'])
+                //   if(!(responsePlan.status >= 200 && responsePlan.status <= 299)){
+                //     throw new UnauthorizedException();
+                //   }
 
-                  if(responsePlan.data['Payment']['RecurrentPayment']['ReasonCode'] == 0){
-                    let signature = (await this.signatureModel.findOne( {id_usuario:  createSignature.id_usuario}));
-                    if(signature){
+                //   if(responsePlan.data['Payment']['RecurrentPayment']['ReasonCode'] == 0){
+                //     let signature = (await this.signatureModel.findOne( {id_usuario:  createSignature.id_usuario}));
+                //     if(signature){
 
-                        await this.signatureModel.updateOne({id_usuario: createSignature.id_usuario}, {status:  true, data_expiracao:new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura:  Date.now(), id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId']});
-                    }else{
-                        const signature = new this.signatureModel({ status: true, data_expiracao:  new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId']});
-                        signature.save();
-                    }
-                    return responsePlan.data['Payment'];
-                  }else{
-                    throw new UnauthorizedException({mensagem: "Problemas com o Cartão", codigo: "invalid_card"})
-                  }
+                //         await this.signatureModel.updateOne({id_usuario: createSignature.id_usuario}, {status:  true, data_expiracao:new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura:  Date.now(), id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId']});
+                //     }else{
+                //         const signature = new this.signatureModel({ status: true, data_expiracao:  new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId']});
+                //         signature.save();
+                //     }
+                //     return responsePlan.data['Payment'];
+                //   }else{
+                //     throw new UnauthorizedException({mensagem: "Problemas com o Cartão", codigo: "invalid_card"})
+                //   }
 
                  
                
