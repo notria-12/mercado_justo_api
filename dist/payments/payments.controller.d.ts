@@ -20,7 +20,7 @@ export declare class PaymentsController {
     buscaDiasRestantes(id: string): Promise<{
         dias_restantes: number;
     }>;
-    criaAssinatura(createSignature: CreateSignatureDto): Promise<void>;
+    criaAssinatura(createSignature: CreateSignatureDto): Promise<any>;
     notificaPagamento(data: any): Promise<any>;
     buscaPlano(id: string): Promise<any>;
     criaCartao(createCard: CreateCardDto): Promise<any>;
