@@ -33,9 +33,9 @@ let PaymentsService = class PaymentsService {
                         'MerchantId': process.env.MERCHANT_ID,
                         'MerchantKey': process.env.MERCHANT_KEY
                     } });
-                console.log(responsePayment.data);
+                console.log('PAYMENT', responsePayment.data);
                 var recurrency = await this.buscaAssinaturaCIELO(responsePayment.data['RecurrentPayment']['RecurrentPaymentId']);
-                console.log(recurrency);
+                console.log('RECURRENCY::', recurrency);
                 if (recurrency['Status'] == 1) {
                     await this.signatureModel.updateOne({ id_assinatura: recurrency['RecurrentPaymentId'] }, { status: true, data_expiracao: new Date(recurrency['NextRecurrency']), ultima_assinatura: Date.now(), id_pagamento: paymentId });
                 }
