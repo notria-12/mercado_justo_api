@@ -27,9 +27,16 @@ let PaymentsService = class PaymentsService {
     async notificaPamento(data) {
         try {
             console.log(data);
-            let signatureId = data['RecurrentPaymentId'];
-            let signatureCielo = await this.buscaAssinaturaCIELO(signatureId);
-            if (data['ChangeType'] == '2') {
+            if (data['ChangeType'] == 1 || data['ChangeType'] == 2 || data['ChangeType'] == 4) {
+                let paymentId = data['PaymentId'];
+                let responsePayment = await axios_1.default.get(process.env.BASE_URL_QUERY + '/1/sales/' + paymentId, { headers: {
+                        'MerchantId': process.env.MERCHANT_ID,
+                        'MerchantKey': process.env.MERCHANT_KEY
+                    } });
+                var recurrency = await this.buscaAssinaturaCIELO(responsePayment.data['RecurrentPayment']['RecurrentPaymentId']);
+                if (recurrency['Status'] == 1) {
+                    await this.signatureModel.updateOne({ id_assinatura: recurrency['RecurrentPaymentId'] }, { status: true, data_expiracao: new Date(recurrency['NextRecurrency']), ultima_assinatura: Date.now(), id_pagamento: paymentId });
+                }
             }
         }
         catch (e) {
