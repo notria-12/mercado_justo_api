@@ -19,11 +19,7 @@ export class CreateCardDto{
     @IsString()
     @IsNotEmpty()
     holder_name: string
-    @IsString()
-    @IsNotEmpty()
-    cpf: string
-    @IsString()
-    brand: string
+    
 
 }
 

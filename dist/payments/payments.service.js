@@ -161,6 +161,7 @@ let PaymentsService = class PaymentsService {
                         },
                         "Payment": {
                             "Installments": 1,
+                            "Capture": true,
                             "RecurrentPayment": {
                                 "AuthorizeNow": true,
                                 "Interval": "Monthly"
@@ -232,10 +233,6 @@ let PaymentsService = class PaymentsService {
                     "security_code": createCard.security_code,
                     "cardholder": {
                         "name": createCard.holder_name,
-                        "identification": {
-                            "type": "CPF",
-                            "number": createCard.cpf
-                        }
                     }
                 };
                 var result = await axios_1.default.post('https://api.mercadopago.com/v1/card_tokens?public_key=APP_USR-4017638a-dedd-4113-b8b0-5d5e32788862', cardInfo, {

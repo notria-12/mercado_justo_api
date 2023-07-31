@@ -254,6 +254,7 @@ export class PaymentsService{
                      },
                      "Payment": {
                        "Installments": 1,
+                       "Capture": true,
                        "RecurrentPayment": {
                          "AuthorizeNow": true,
                          "Interval":"Monthly"
@@ -332,10 +333,7 @@ export class PaymentsService{
                 "security_code": createCard.security_code,
                 "cardholder": {
                     "name": createCard.holder_name,
-                    "identification": {
-                        "type": "CPF",
-                        "number": createCard.cpf
-                    }
+                   
                 }
             }
       

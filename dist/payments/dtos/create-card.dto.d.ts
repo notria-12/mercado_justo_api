@@ -5,6 +5,4 @@ export declare class CreateCardDto {
     expiration_year: string;
     security_code: string;
     holder_name: string;
-    cpf: string;
-    brand: string;
 }
