@@ -24,12 +24,14 @@ export class PaymentsService{
             if(data['ChangeType']  == 1 || data['ChangeType']  == 2 || data['ChangeType']  == 4){
 
                 let paymentId : string = data['PaymentId'];
+                
                 let responsePayment =  await axios.get(process.env.BASE_URL_QUERY+'/1/sales/'+paymentId,{ headers: {
                     'MerchantId': process.env.MERCHANT_ID,
                     'MerchantKey': process.env.MERCHANT_KEY
                 }},);
-
+                console.log(responsePayment.data);
               var recurrency = await this.buscaAssinaturaCIELO(responsePayment.data['RecurrentPayment']['RecurrentPaymentId']);
+              console.log(recurrency)
               if(recurrency['Status'] == 1){
 
                   await this.signatureModel.updateOne({id_assinatura: recurrency['RecurrentPaymentId']}, {status:  true, data_expiracao:new Date(recurrency['NextRecurrency']), ultima_assinatura: Date.now(), id_pagamento: paymentId});
