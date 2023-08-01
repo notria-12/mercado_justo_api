@@ -30,7 +30,7 @@ export class PaymentsService{
                     'MerchantKey': process.env.MERCHANT_KEY
                 }},);
                 console.log('PAYMENT',responsePayment.data);
-              var recurrency = await this.buscaAssinaturaCIELO(responsePayment.data['RecurrentPayment']['RecurrentPaymentId']);
+              var recurrency = await this.buscaAssinaturaCIELO(responsePayment.data['Payment']['RecurrentPayment']['RecurrentPaymentId']);
               console.log('RECURRENCY::',recurrency)
               if(recurrency['Status'] == 1){
 
