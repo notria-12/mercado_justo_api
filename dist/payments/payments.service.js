@@ -185,7 +185,7 @@ let PaymentsService = class PaymentsService {
                             },
                             "SoftDescriptor": "Mercado Justo",
                             "Type": "CreditCard",
-                            "Amount": 5,
+                            "Amount": 299,
                             "Currency": "BRL",
                             "Country": "BRA"
                         }
@@ -203,10 +203,10 @@ let PaymentsService = class PaymentsService {
                     if (responsePlan.data['Payment']['RecurrentPayment']['ReasonCode'] == 0) {
                         let signature = (await this.signatureModel.findOne({ id_usuario: createSignature.id_usuario }));
                         if (signature) {
-                            await this.signatureModel.updateOne({ id_usuario: createSignature.id_usuario }, { status: true, data_expiracao: new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], tipo_pagamento: signature_schema_1.tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'] });
+                            await this.signatureModel.updateOne({ id_usuario: createSignature.id_usuario }, { status: true, data_expiracao: new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], tipo_pagamento: signature_schema_1.tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], pagamento_pendente: false });
                         }
                         else {
-                            const signature = new this.signatureModel({ status: true, data_expiracao: new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: signature_schema_1.tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'] });
+                            const signature = new this.signatureModel({ status: true, data_expiracao: new Date(responsePlan.data['Payment']['RecurrentPayment']['NextRecurrency']).getTime(), ultima_assinatura: Date.now(), id_usuario: createSignature.id_usuario, card_token: undefined, tipo_pagamento: signature_schema_1.tipo[0], id_pagamento: responsePlan.data['Payment']['PaymentId'], id_assinatura: responsePlan.data['Payment']['RecurrentPayment']['RecurrentPaymentId'], pagamento_pendente: false });
                             signature.save();
                         }
                         return responsePlan.data['Payment'];
@@ -412,6 +412,9 @@ let PaymentsService = class PaymentsService {
                         await this.userModel.findByIdAndUpdate(signature['id_usuario'], { status_assinante: false });
                         await this.signatureModel.updateOne({ id_usuario: signature['id_usuario'] }, { status: false });
                         signature = await this.signatureModel.findOne({ id_usuario: id });
+                    }
+                    else {
+                        await this.userModel.findByIdAndUpdate(signature['id_usuario'], { status_assinante: true });
                     }
                 }
             }
