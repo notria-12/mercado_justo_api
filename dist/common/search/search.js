@@ -218,7 +218,7 @@ function regexWithAccents(search) {
         ['c', 'ç']
     ];
     let newRegex = '';
-    const preWorkedSearch = `.*${result.toLowerCase()}.*`;
+    const preWorkedSearch = `(?=.*${result.toLowerCase()}.*)`;
     for (const char of preWorkedSearch) {
         let found = false;
         for (const group of charsAccent) {
@@ -232,6 +232,6 @@ function regexWithAccents(search) {
             newRegex += char;
         }
     }
-    return `${newRegex.replace(/\s/g, ".*")}`;
+    return `${newRegex.replace(/\s/g, ")(?=.*")}`;
 }
 //# sourceMappingURL=search.js.map

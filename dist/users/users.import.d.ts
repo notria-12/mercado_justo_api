@@ -33,7 +33,7 @@ export declare class UsersImport extends ExcelImport {
     })[];
     protected assumption: {
         key: string;
-        dataTransform: (worksheetName: string) => "admin" | "operador" | "gerente" | "cliente";
+        dataTransform: (worksheetName: string) => "gerente" | "admin" | "operador" | "cliente";
         required: boolean;
     }[];
     import(uploadedFile: Express.Multer.File): Promise<{

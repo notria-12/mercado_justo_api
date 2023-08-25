@@ -13,6 +13,7 @@ export async function findAllWithPaginationSearch(
 ) {
   const { limit, sort, skip } = generatePagination(query);
   const search = generateSearchObject(query);
+  
   const data = await (model as any).find({ ...preFilter, ...search })
     .skip(skip)
     .limit(limit)
@@ -222,7 +223,7 @@ function regexWithAccents(search: string) {
   ];
 
   let newRegex = '';
-  const preWorkedSearch = `.*${result.toLowerCase()}.*`;
+  const preWorkedSearch = `(?=.*${result.toLowerCase()}.*)`;
   for (const char of preWorkedSearch) {
     let found = false
     for (const group of charsAccent) {
@@ -236,5 +237,6 @@ function regexWithAccents(search: string) {
       newRegex += char;
     }
   }
-  return `${newRegex.replace(/\s/g, ".*")}`;
+  
+  return `${newRegex.replace(/\s/g, ")(?=.*")}`;
 }
