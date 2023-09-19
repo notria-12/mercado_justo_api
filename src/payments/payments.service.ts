@@ -370,7 +370,7 @@ export class PaymentsService{
         const exists = await this.signatureModel.findOne({id_usuario: createPixDto.id})
         let data;
         var payment_data = {
-            transaction_amount: 0.10,
+            transaction_amount: 2.99,
             description: 'Título do produto',
             payment_method_id: 'pix',
             payer: {
