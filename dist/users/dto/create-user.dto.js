@@ -42,13 +42,13 @@ __decorate([
     __metadata("design:type", String)
 ], AddressDto.prototype, "bairro", void 0);
 __decorate([
-    (0, common_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     (0, common_1.IsString)(),
     __metadata("design:type", String)
 ], AddressDto.prototype, "cidade", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: schema_1.uf }),
-    (0, common_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     (0, common_1.IsIn)(schema_1.uf),
     __metadata("design:type", String)
 ], AddressDto.prototype, "uf", void 0);

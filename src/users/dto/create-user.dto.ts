@@ -23,11 +23,11 @@ export class AddressDto {
   @IsOptional()
   @IsString()
   bairro: string;
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   cidade: string;
   @ApiProperty({ enum: uf })
-  @IsNotEmpty()
+  @IsOptional()
   @IsIn(uf)
   uf: UF;
   @IsOptional()
