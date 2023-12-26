@@ -41,4 +41,4 @@ export class Product {
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
 ProductSchema.index({ codigo_barras: 1, cidade: 1 });
-ProductSchema.index({ descricao: 1 });
+ProductSchema.index({ descricao: 'text' });

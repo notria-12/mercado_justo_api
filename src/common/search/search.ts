@@ -11,15 +11,44 @@ export async function findAllWithPaginationSearch(
   populate: PopulateOptions | string = '',
   preFilter: FilterQuery<any> = {}
 ) {
+
+  const parsedSearch = tryToParse(query.procurar);
+  const searchObjs: SearchObj[] = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
   const { limit, sort, skip } = generatePagination(query);
   const search = generateSearchObject(query);
   
-  const data = await (model as any).find({ ...preFilter, ...search })
-    .skip(skip)
-    .limit(limit)
-    .sort(sort)
-    .select(select)
-    .populate(populate);
+
+  // const data = await (model as any).find({ ...preFilter, ...search },)
+  //   .skip(skip)
+  //   .limit(limit)
+  //   .sort(sort)
+  //   .select(select)
+  //   .populate(populate);
+
+  const data = await (model as any).aggregate([
+    {
+      $match: { ...preFilter,
+        ...search
+      },
+    },
+    {
+      $addFields: {
+        startsWithO: { $regexMatch: { input: '$descricao', regex: `^${searchObjs[0].valor}\\b`,options: 'i' } },
+      },
+    },
+    
+    {
+      $sort: { startsWithO: -1 },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+
+  ]);
+
   const totalCount = await model.countDocuments({ ...preFilter, ...search });
   const totalPages = Math.floor(totalCount / limit);
   return { data, totalCount, totalPages };
@@ -76,7 +105,7 @@ export function generateSearchObject(rawSearch: FindAllSearchDto) {
     if (searchObj.tipo === 'string' || !searchObj.tipo) {
       if (isString(searchObj.valor)) {
         if (searchObj.valor.match(/^-$/)) {
-          
+
           Object.assign(resultSearchObj, {
             [searchObj.termo]: {
               $exists: false,
@@ -237,6 +266,6 @@ function regexWithAccents(search: string) {
       newRegex += char;
     }
   }
-  
+
   return `${newRegex.replace(/\s/g, ")(?=.*")}`;
 }
