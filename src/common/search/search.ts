@@ -12,42 +12,46 @@ export async function findAllWithPaginationSearch(
   preFilter: FilterQuery<any> = {}
 ) {
 
-  const parsedSearch = tryToParse(query.procurar);
-  const searchObjs: SearchObj[] = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
+ 
   const { limit, sort, skip } = generatePagination(query);
   const search = generateSearchObject(query);
+  let data;
   
-
-  // const data = await (model as any).find({ ...preFilter, ...search },)
-  //   .skip(skip)
-  //   .limit(limit)
-  //   .sort(sort)
-  //   .select(select)
-  //   .populate(populate);
-
-  const data = await (model as any).aggregate([
-    {
-      $match: { ...preFilter,
-        ...search
+  if(!query.procurar){
+    data = await (model as any).find({ ...preFilter, ...search },)
+      .skip(skip)
+      .limit(limit)
+      .sort(sort)
+      .select(select)
+      .populate(populate);
+  }else{
+    const parsedSearch = tryToParse(query.procurar);
+    const searchObjs: SearchObj[] = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
+    data = await (model as any).aggregate([
+      {
+        $match: { ...preFilter,
+          ...search
+        },
       },
-    },
-    {
-      $addFields: {
-        startsWithO: { $regexMatch: { input: '$descricao', regex: `^${searchObjs[0].valor}\\b`,options: 'i' } },
+      {
+        $addFields: {
+          startsWithO: { $regexMatch: { input: '$descricao', regex: `^${searchObjs[0].valor}\\b`,options: 'i' } },
+        },
       },
-    },
+      
+      {
+        $sort: { startsWithO: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+
+    ]);
+  }
     
-    {
-      $sort: { startsWithO: -1 },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-
-  ]);
 
   const totalCount = await model.countDocuments({ ...preFilter, ...search });
   const totalPages = Math.floor(totalCount / limit);
