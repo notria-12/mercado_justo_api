@@ -20,7 +20,7 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("precos" | "produtos" | "mercados" | "usuarios" | "imagens" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
@@ -37,7 +37,7 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("precos" | "produtos" | "mercados" | "usuarios" | "imagens" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
@@ -54,7 +54,7 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("precos" | "produtos" | "mercados" | "usuarios" | "imagens" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };
@@ -77,7 +77,7 @@ export declare class AuthController {
             status_assinante: boolean;
             ultimo_acesso: Date;
             data_cadastro: Date;
-            tipo_conta: "gerente" | "admin" | "operador" | "cliente";
+            tipo_conta: "admin" | "operador" | "gerente" | "cliente";
             permissoes: ("precos" | "produtos" | "mercados" | "usuarios" | "imagens" | "edicao_textos_app" | "gerenciamento_dados")[];
             responsavel_mercados: number[];
         };

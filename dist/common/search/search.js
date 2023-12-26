@@ -7,14 +7,29 @@ const class_validator_1 = require("class-validator");
 const common_2 = require("@nestjs/common");
 const DATE_SEPARATOR = ';';
 async function findAllWithPaginationSearch(model, query, select = '', populate = '', preFilter = {}) {
+    const parsedSearch = tryToParse(query.procurar);
+    const searchObjs = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
     const { limit, sort, skip } = (0, common_1.generatePagination)(query);
     const search = generateSearchObject(query);
-    const data = await model.find(Object.assign(Object.assign({}, preFilter), search))
-        .skip(skip)
-        .limit(limit)
-        .sort(sort)
-        .select(select)
-        .populate(populate);
+    const data = await model.aggregate([
+        {
+            $match: Object.assign(Object.assign({}, preFilter), search),
+        },
+        {
+            $addFields: {
+                startsWithO: { $regexMatch: { input: '$descricao', regex: `^${searchObjs[0].valor}\\b`, options: 'i' } },
+            },
+        },
+        {
+            $sort: { startsWithO: -1 },
+        },
+        {
+            $skip: skip,
+        },
+        {
+            $limit: limit,
+        },
+    ]);
     const totalCount = await model.countDocuments(Object.assign(Object.assign({}, preFilter), search));
     const totalPages = Math.floor(totalCount / limit);
     return { data, totalCount, totalPages };

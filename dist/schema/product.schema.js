@@ -67,5 +67,5 @@ Product = __decorate([
 exports.Product = Product;
 exports.ProductSchema = mongoose_1.SchemaFactory.createForClass(Product);
 exports.ProductSchema.index({ codigo_barras: 1, cidade: 1 });
-exports.ProductSchema.index({ descricao: 1 });
+exports.ProductSchema.index({ descricao: 'text' });
 //# sourceMappingURL=product.schema.js.map
