@@ -16,8 +16,10 @@ export async function findAllWithPaginationSearch(
   const { limit, sort, skip } = generatePagination(query);
   const search = generateSearchObject(query);
   let data;
-  
-  if(!query.procurar){
+  const parsedSearch = tryToParse(query.procurar);
+  const searchObjs: SearchObj[] = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
+  console.log(searchObjs[0].termo == 'descricao')
+  if(!query.procurar && searchObjs[0].termo != 'descricao'){
     data = await (model as any).find({ ...preFilter, ...search },)
       .skip(skip)
       .limit(limit)
@@ -25,8 +27,7 @@ export async function findAllWithPaginationSearch(
       .select(select)
       .populate(populate);
   }else{
-    const parsedSearch = tryToParse(query.procurar);
-    const searchObjs: SearchObj[] = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
+   
     data = await (model as any).aggregate([
       {
         $match: { ...preFilter,
