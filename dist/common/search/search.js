@@ -12,16 +12,7 @@ async function findAllWithPaginationSearch(model, query, select = '', populate =
     let data;
     const parsedSearch = tryToParse(query.procurar);
     const searchObjs = Array.isArray(parsedSearch) ? parsedSearch : [parsedSearch];
-    console.log(searchObjs[0].termo == 'descricao');
-    if (!query.procurar && searchObjs[0].termo != 'descricao') {
-        data = await model.find(Object.assign(Object.assign({}, preFilter), search))
-            .skip(skip)
-            .limit(limit)
-            .sort(sort)
-            .select(select)
-            .populate(populate);
-    }
-    else {
+    if (searchObjs[0] != null && searchObjs[0].termo == 'descricao') {
         data = await model.aggregate([
             {
                 $match: Object.assign(Object.assign({}, preFilter), search),
@@ -41,6 +32,14 @@ async function findAllWithPaginationSearch(model, query, select = '', populate =
                 $limit: limit,
             },
         ]);
+    }
+    else {
+        data = await model.find(Object.assign(Object.assign({}, preFilter), search))
+            .skip(skip)
+            .limit(limit)
+            .sort(sort)
+            .select(select)
+            .populate(populate);
     }
     const totalCount = await model.countDocuments(Object.assign(Object.assign({}, preFilter), search));
     const totalPages = Math.floor(totalCount / limit);
