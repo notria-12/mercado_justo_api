@@ -109,12 +109,16 @@ let PricesService = class PricesService {
             "id": { $in: marketsIds }, "produto": productId
         });
         let sumPrices = 0.0;
+        let totalMissingPrices = 0;
         prices.forEach((price, index) => {
-            if (price['preco'] != 'Em Falta') {
+            if (price['preco'] != 'Em Falta' && price['preco'] != '') {
                 sumPrices += +(price['preco'].replace('R$ ', '').replace(',', '.'));
             }
+            else {
+                totalMissingPrices++;
+            }
         });
-        return { 'preco-medio': (sumPrices / prices.length) };
+        return { 'preco-medio': (sumPrices / (prices.length - totalMissingPrices)) };
     }
     async update(id, updatePriceDto) {
         if (this.userHasAccessToId(updatePriceDto.id)) {
