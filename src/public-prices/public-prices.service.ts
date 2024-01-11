@@ -18,6 +18,7 @@ export class PublicPricesService{
             "id": {$in: marketsIds}, "produto": {$in: productIds}
           
         });
+        
         let ordenedPrices = [];
         productIds.forEach((productId, index) =>{
          let pricesByProducts = prices.filter((price) => price.produto == productId);
@@ -33,7 +34,24 @@ export class PublicPricesService{
           })
           ordenedPrices.push(pricesByProducts.sort((a,b) => a.id - b.id));
         })
+
+        let newPrices = [];
+ 
+        for(let index = 0; index < ordenedPrices.length; index++){
+          
+         let auxPrices=[];
+          for(let marketId of marketsIds){
+
+            let priceByMarket = ordenedPrices[index].filter((price)=>{
+              return price.id == marketId
+            });
+            
+            auxPrices.push(priceByMarket[0]);    
+          }
+          
+          newPrices[index] = auxPrices;
+        }
         
-        return ordenedPrices; 
+        return newPrices; 
       }
 }
