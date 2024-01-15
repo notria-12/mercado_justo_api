@@ -23,7 +23,7 @@ let PublicSupermarketsService = class PublicSupermarketsService {
         this.schemaModel = schemaModel;
     }
     async findPublicSupermarkets() {
-        return await this.schemaModel.find({ ordem: { $ne: null } }).sort({ 'ordem': 1 }).limit(20);
+        return await this.schemaModel.find({ ordem: { $ne: null } }).sort({ 'ordem': 1 }).limit(100);
     }
 };
 PublicSupermarketsService = __decorate([
